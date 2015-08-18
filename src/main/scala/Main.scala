@@ -22,7 +22,7 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 	implicit val system = ActorSystem("on-spray-can")
 	implicit val context = system.dispatcher
 
-	startServer(interface = "localhost", port = 8080) {
+	startServer(interface = args(0), port = 8080) {
 	
 		def blog[T]( domain: String, result: dao.Blog => T ) = await( dao.Blogs.find(domain) ) map result
 		
@@ -44,8 +44,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//
 		(get & pathSingleSlash & hostName & optionalSession) {
 			(h, session) => complete( Application.index(h, session) ) } ~
-		// 		(get & path( "author"/IntNumber ) & hostName) {
-		// 			(id, host) => complete(Application.index( "localhost" )) } ~
+		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
+			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {
 		// 			(id, host) => complete(Application.index( "localhost" )) } ~
 		// 		(get & path( "uncategorized" ) & hostName) {
