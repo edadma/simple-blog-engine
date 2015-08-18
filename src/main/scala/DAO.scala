@@ -248,7 +248,10 @@ object Categorizations extends TableQuery(new CategorizationsTable(_)) {
 
 case class Comment(
 	postid: Int,
-	authorid: Int,
+	authorid: Option[Int],
+	name: Option[String],
+	email: Option[String],
+	url: Option[String],
 	date: Instant,
 	replyto: Option[Int],
 	content: String,
@@ -258,12 +261,15 @@ case class Comment(
 class CommentsTable(tag: Tag) extends Table[Comment](tag, "comments") {
 	def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 	def postid = column[Int]("postid")
-	def authorid = column[Int]("authorid")
+	def authorid = column[Option[Int]]("authorid")
+	def name = column[Option[String]]("name")
+	def email = column[Option[String]]("email")
+	def url = column[Option[String]]("url")
 	def date = column[Instant]("date")
 	def replyto = column[Option[Int]]("replyto")
 	def content = column[String]("content")
 	
-	def * = (postid, authorid, date, replyto, content, id.?) <> (Comment.tupled, Comment.unapply)
+	def * = (postid, authorid, name, email, url, date, replyto, content, id.?) <> (Comment.tupled, Comment.unapply)
 }
 
 object Comments extends TableQuery(new CommentsTable(_)) {
@@ -275,10 +281,13 @@ object Comments extends TableQuery(new CommentsTable(_)) {
 
 	def create(
 			postid: Int,
-			authorid: Int,
+			authorid: Option[Int],
+			name: Option[String],
+			email: Option[String],
+			url: Option[String],
 			date: Instant,
 			replyto: Option[Int],
-			content: String ) = db.run( this returning map(_.id) += Comment(postid, authorid, date, replyto, content) )
+			content: String ) = db.run( this returning map(_.id) += Comment(postid, authorid, name, email, url, date, replyto, content) )
 
 	def delete(postid: Int): Future[Int] = {
 		db.run(filter(_.postid === postid).delete)

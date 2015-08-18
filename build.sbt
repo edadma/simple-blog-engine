@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
 	"org.webjars" % "bootstrap" % "3.3.5",
 //	"org.webjars" % "font-awesome" % "4.2.0",
 	"org.webjars" % "angularjs" % "1.4.3",
-	"org.webjars" % "highlightjs" % "8.4"
+	"org.webjars" % "nervgh-angular-file-upload" % "1.1.5-1"
 	)
 
 libraryDependencies ++= Seq(
@@ -50,8 +50,6 @@ libraryDependencies ++= Seq(
 	"org.joda" % "joda-convert" % "1.7",
 	"com.github.tototoshi" %% "slick-joda-mapper" % "2.0.0"
 	)
-
-//libraryDependencies += "com.googlecode.json-simple" % "json-simple" % "1.1.1"
 
 //mainClass in assembly := Some( "ca.hyperreal.blog.Boot" )
 

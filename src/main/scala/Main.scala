@@ -105,8 +105,9 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				h => complete( blog(h, _ => API.users) ) } ~
 			(path("comments"/IntNumber) & hostName) { (postid, h) => 
 				(get & complete( blog(h, _ => API.comments(postid)) )) ~
-				(post & formFields('authorid.as[Int], 'replytoid.as[Int]?, 'text)) { (authorid, replytoid, text) =>
-					complete( blog(h, _ => API.comments(postid, authorid, replytoid, text)) ) } }
+				(post & formFields('authorid.as[Int]?, 'name?, 'email?, 'url?, 'replytoid.as[Int]?, 'text)) {
+					(authorid, name, email, url, replytoid, text) =>
+						complete( blog(h, _ => API.comments(postid, authorid, name, email, url, replytoid, text)) ) } }
 		}
 	}
 }

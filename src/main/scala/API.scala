@@ -36,7 +36,7 @@ object API extends SessionDirectives {
 	
 	def comments( postid: Int ) = Queries.findComments( postid )
 	
-	def comments( postid: Int, authorid: Int, replyto: Option[Int], content: String ) =
-		dao.Comments.create(postid, authorid, Instant.now, replyto, content) map (id => Map( "id" -> id ))
+	def comments( postid: Int, authorid: Option[Int], name: Option[String], email: Option[String], url: Option[String],replyto: Option[Int], content: String ) =
+		dao.Comments.create(postid, authorid, name, email, url, Instant.now, replyto, content) map (id => Map( "id" -> id ))
 	
 }
