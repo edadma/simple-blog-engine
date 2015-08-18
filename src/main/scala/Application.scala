@@ -63,7 +63,12 @@ object Application extends SessionDirectives {
 	}
 	
 	def comment( session: Session, postid: Int, replytoid: Option[Int], text: String ) = {
-		dao.Comments.create(postid, session.data("id").toInt, Instant.now, replytoid, text)
+		dao.Comments.create( postid, Some(session.data("id").toInt), None, None, None, Instant.now, replytoid, text )
+		redirectResponse( "/" )
+	}
+	
+	def comment( name: String, email: Option[String], url: Option[String], postid: Int, replytoid: Option[Int], text: String ) = {
+		dao.Comments.create( postid, None, Some(name), email, url, Instant.now, replytoid, text )
 		redirectResponse( "/" )
 	}
 	

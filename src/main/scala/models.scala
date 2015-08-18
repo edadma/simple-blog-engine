@@ -82,17 +82,22 @@ object Post {
 case class Comment(
 	id: Int,
 	postid: Int,
-	authorid: Int,
+	authorid: Option[Int],
 	author: String,
+	url: Option[String],
 	date: Instant,
 	replyto: Option[Int],
 	content: String
 )
 
 object Comment {
-	implicit val comment = jsonFormat7( Comment.apply )
+	implicit val comment = jsonFormat8( Comment.apply )
 	
-	def from( c: dao.Comment, u: dao.User ) = Comment( c.id.get, c.postid, c.authorid, u.name, c.date, c.replyto, c.content )
+	def from( c: dao.Comment, u: dao.User ) =
+		c.authorid match {
+			case None => Comment( c.id.get, c.postid, None, c.name.get, c.url, c.date, c.replyto, c.content )
+			case authorid => Comment( c.id.get, c.postid, authorid, u.name, u.url, c.date, c.replyto, c.content )
+		}
 }
 
 case class CommentWithReplies( comment: Comment, replies: Seq[CommentWithReplies] )
