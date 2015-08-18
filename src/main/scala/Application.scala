@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 import spray.http.{StatusCodes, HttpResponse, HttpHeaders}
 import spray.routing.directives.RouteDirectives._
@@ -67,8 +67,8 @@ object Application extends SessionDirectives {
 		redirectResponse( "/" )
 	}
 	
-	def comment( name: String, email: Option[String], url: Option[String], postid: Int, replytoid: Option[Int], text: String ) = {
-		dao.Comments.create( postid, None, Some(name), email, url, Instant.now, replytoid, text )
+	def comment( name: String, email: Option[String], url: String, postid: Int, replytoid: Option[Int], text: String ) = {
+		dao.Comments.create( postid, None, Some(name), email, if (url == "") None else Some(url), Instant.now, replytoid, text )
 		redirectResponse( "/" )
 	}
 	

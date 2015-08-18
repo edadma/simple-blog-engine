@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 import akka.actor.ActorSystem
 
@@ -79,6 +79,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 			_ => clearSession & redirect( "/", StatusCodes.SeeOther ) } ~
 		(post & path( "comment" ) & session & formFields( 'postid.as[Int], 'replytoid.as[Int]?, 'text )) {
 			(session, postid, replytoid, text) => complete( Application.comment(session, postid, replytoid, text) ) } ~
+		(post & path( "comment" ) & formFields( 'name, 'email?, 'url, 'postid.as[Int], 'replytoid.as[Int]?, 'text )) {
+ 			(name, email, url, postid, replytoid, text) => complete( Application.comment(name, email, url, postid, replytoid, text) ) } ~
 		//
 		// API routes
 		//
@@ -105,7 +107,7 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				h => complete( blog(h, _ => API.users) ) } ~
 			(path("comments"/IntNumber) & hostName) { (postid, h) => 
 				(get & complete( blog(h, _ => API.comments(postid)) )) ~
-				(post & formFields('authorid.as[Int]?, 'name?, 'email?, 'url?, 'replytoid.as[Int]?, 'text)) {
+				(post & formFields('authorid.as[Int]?, 'name?, 'email?, 'url, 'replytoid.as[Int]?, 'text)) {
 					(authorid, name, email, url, replytoid, text) =>
 						complete( blog(h, _ => API.comments(postid, authorid, name, email, url, replytoid, text)) ) } }
 		}

@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 import in.azeemarshad.common.sessionutils.Session
 
@@ -236,64 +236,72 @@ object Views {
 				yield {
 					<xml:group>
 						<div class={(if (level > 0) s"col-sm-offset-$level " else "") + "blog-comment"}>
-							<h2 class="blog-comment-name">{c.author}</h2>
+							<h2 class="blog-comment-name">{if (c.url == None) c.author else <a href={c.url.get}>{c.author}</a>}</h2>
 							<p class="blog-comment-meta">{commentDateFormat.print(c.date)}</p>
 							{c.content} <!-- xml.Unparsed( c.content ) -->
-							{if (session != None)
-								<div ng-controller="commentCtrl">
-									<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Reply</button>
-									<div ng-show="commentForm">
-										<h1>Reply to {c.author}</h1>
-										<a ng-click="commentForm = false">Cancel reply</a>
-										<!-- <p>Required fields are marked *</p> -->
-										<div class="row">
-											<form action="/comment" method="POST" class="col-sm-5">
+							<div ng-controller="commentCtrl">
+								<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Reply</button>
+								<div ng-show="commentForm">
+									<h1>Reply to {c.author}</h1>
+									<a ng-click="commentForm = false">Cancel reply</a>
+									<p>Required fields are marked *</p>
+									<div class="row">
+										<form action="/comment" method="POST" class="col-sm-5">
+											{if (session == None)
 												<div class="form-group">
-													<textarea class="form-control" rows="4" cols="50" name="text" required="true"></textarea></div>
-												<input type="hidden" name="postid" value={postid.toString}/>
-												<input type="hidden" name="replytoid" value={c.id.toString}/>
-												<p><button type="submit" class="btn btn-default">Submit reply</button></p>
-											</form>
-										</div>
+													<input type="text" class="form-control" name="name" placeholder="Your Name*" required=""/></div>
+												<div class="form-group">
+													<input type="text" class="form-control" name="url" placeholder="Your URL"/></div>
+											}
+											<div class="form-group">
+												<textarea class="form-control" rows="4" cols="50" name="text" required=""></textarea></div>
+											<input type="hidden" name="postid" value={postid.toString}/>
+											<input type="hidden" name="replytoid" value={c.id.toString}/>
+											<p><button type="submit" class="btn btn-default">Submit reply</button></p>
+										</form>
 									</div>
 								</div>
-							}
+							</div>
 						</div>
 						{commentsLevel( r, level + 1 )}
 					</xml:group>
 				}
 		}
 		
-		<div id={s"comments-$postid"} class="blog-comments" ng-controller="commentCtrl">
+		<div id={s"comments-$postid"} class="blog-comments">
 			{if (!cs.isEmpty)
 				<xml:group>
 					<h1>{count} Comment{if (count == 1) "" else "s"}</h1>
 					{commentsLevel( cs, 0 )}
 				</xml:group>
 			}
-			{if (session == None)
+			<!-- {if (session == None)
 				<a href="/register">Register to leave a comment</a>
-			else {
-				<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Leave a comment</button>
-				<div ng-show="commentForm">
-					<h1>Leave a comment</h1>
-					<a ng-click="commentForm = false">Cancel comment</a>
-					<!-- <p>Required fields are marked *</p> -->
-					<div class="row">
-						<form action="/comment" method="POST" class="col-sm-5">
-							<!-- <div class="form-group">
-								<input type="text" class="form-control" ng-model="comment.name" placeholder="Your Name"/></div>
-							<div class="form-group">
-								<input type="text" class="form-control" ng-model="comment.url" placeholder="Your URL"/></div> -->
-							<div class="form-group">
-								<textarea class="form-control" rows="4" cols="50" name="text" required="true"></textarea></div>
-							<input type="hidden" name="postid" value={postid.toString}/>
-							<p><button type="submit" class="btn btn-default">Submit comment</button></p>
-						</form>
+			else { -->
+				<div ng-controller="commentCtrl">
+					<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Leave a comment</button>
+					<div ng-show="commentForm">
+						<h1>Leave a comment</h1>
+						<a ng-click="commentForm = false">Cancel comment</a>
+						<p>Required fields are marked *</p>
+						<div class="row">
+							<form action="/comment" method="POST" class="col-sm-5">
+								{if (session == None)
+									<div class="form-group">
+										<input type="text" class="form-control" name="name" placeholder="Your Name*" required=""/></div>
+									<div class="form-group">
+										<input type="text" class="form-control" name="url" placeholder="Your URL"/></div>
+								}
+								<div class="form-group">
+									<textarea class="form-control" rows="4" cols="50" name="text" required=""></textarea></div>
+								<input type="hidden" name="postid" value={postid.toString}/>
+								<p><button type="submit" class="btn btn-default">Submit comment</button></p>
+							</form>
+						</div>
 					</div>
 				</div>
-				}
-			}
+				<!-- }
+			} -->
 		</div>
 	}
 	

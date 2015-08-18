@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 import spray.http.{StatusCodes, HttpResponse, HttpHeaders}
 import spray.routing.directives.RouteDirectives._
@@ -36,7 +36,7 @@ object API extends SessionDirectives {
 	
 	def comments( postid: Int ) = Queries.findComments( postid )
 	
-	def comments( postid: Int, authorid: Option[Int], name: Option[String], email: Option[String], url: Option[String],replyto: Option[Int], content: String ) =
-		dao.Comments.create(postid, authorid, name, email, url, Instant.now, replyto, content) map (id => Map( "id" -> id ))
+	def comments( postid: Int, authorid: Option[Int], name: Option[String], email: Option[String], url: String, replyto: Option[Int], content: String ) =
+		dao.Comments.create(postid, authorid, name, email, if (url == "") None else Some(url), Instant.now, replyto, content) map (id => Map( "id" -> id ))
 	
 }

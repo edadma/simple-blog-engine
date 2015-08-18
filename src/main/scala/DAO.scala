@@ -1,4 +1,4 @@
-package ca.hyperreal.blog.dao
+package xyz.hyperreal.blog.dao
 
 import slick.driver.H2Driver.api._
 

@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 package models
 
@@ -92,6 +92,8 @@ case class Comment(
 
 object Comment {
 	implicit val comment = jsonFormat8( Comment.apply )
+	
+	def from( c: dao.Comment ) = Comment( c.id.get, c.postid, None, c.name.get, c.url, c.date, c.replyto, c.content )
 	
 	def from( c: dao.Comment, u: dao.User ) =
 		c.authorid match {

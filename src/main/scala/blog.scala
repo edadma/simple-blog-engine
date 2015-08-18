@@ -1,4 +1,4 @@
-package ca.hyperreal
+package xyz.hyperreal
 
 import slick.driver.H2Driver.api._
 

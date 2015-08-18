@@ -2,7 +2,7 @@ name          := "simple-blog-engine"
 
 version       := "0.1"
 
-organization  := "ca.hyperreal"
+organization  := "xyz.hyperreal"
 
 scalaVersion  := "2.11.7"
 

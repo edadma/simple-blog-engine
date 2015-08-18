@@ -1,4 +1,4 @@
-package ca.hyperreal.blog
+package xyz.hyperreal.blog
 
 import slick.driver.H2Driver.api._
 
@@ -53,9 +53,9 @@ object Queries {
 	
 	def findAllLinks( blogid: Int ) = await( Links.findByBlogid(blogid) ) map (l => (l.url, l.text))
 	
-	def findCommentsNoReply( postid: Int ) = db.stream( Comments.findByPostid(postid) join Users on (_.authorid === _.id) result )
+	def findCommentsNoReply( postid: Int ) = db.stream( Comments.findByPostid(postid) result )
 	
-	def findCommentsReplies( postid: Int, replyto: Int ) = db.stream( Comments.findByPostid(postid, replyto) join Users on (_.authorid === _.id) result )
+	def findCommentsReplies( postid: Int, replyto: Int ) = db.stream( Comments.findByPostid(postid, replyto) result )
 	
 	def findComments( postid: Int ) = {
 		var count = 0
@@ -63,8 +63,12 @@ object Queries {
 		def replies( replyto: Int ): Seq[models.CommentWithReplies] = {
 			val comments = new ListBuffer[models.CommentWithReplies]
 		
-			await( findCommentsReplies( postid, replyto ) foreach { case (c, u) =>
-				val comment = models.Comment.from(c, u)
+			await( findCommentsReplies( postid, replyto ) foreach { c =>
+				val comment =
+					c.authorid match {
+						case Some( authorid ) => models.Comment.from( c, await(Users.find(authorid)).get )
+						case None => models.Comment.from( c )
+					}
 				
 				comments += models.CommentWithReplies(comment, replies( comment.id ))
 				count += 1
@@ -74,8 +78,12 @@ object Queries {
 		
 		val comments = new ListBuffer[models.CommentWithReplies]
 		
-		await( findCommentsNoReply(postid) foreach { case (c, u) =>
-			val comment = models.Comment.from(c, u)
+		await( findCommentsNoReply(postid) foreach { c =>
+			val comment =
+				c.authorid match {
+					case Some( authorid ) => models.Comment.from( c, await(Users.find(authorid)).get )
+					case None => models.Comment.from( c )
+				}
 		
 			comments += models.CommentWithReplies(comment, replies( comment.id ))
 			count += 1
