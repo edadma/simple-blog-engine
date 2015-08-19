@@ -225,8 +225,10 @@ object Views {
 					else
 						xml.Unparsed(p.categories map {case (id, cat) => """<a href="/category/""" + id + """">""" + cat + "</a>"} mkString (", "))
 				} | <a href={s"#comments-${p.id}"}>{count} comment{if (count == 1) "" else "s"}</a></p>
-				{xml.Unparsed( p.content )}
-			{comments( session, p.id, cs, count )}
+				<div>
+					{xml.Unparsed( p.content )}
+				</div>
+				{comments( session, p.id, cs, count )}
 			</div>
 		</xml:group>
 	
@@ -238,7 +240,7 @@ object Views {
 						<div class={(if (level > 0) s"col-sm-offset-$level " else "") + "blog-comment"}>
 							<h2 class="blog-comment-name">{if (c.url == None) c.author else <a href={c.url.get}>{c.author}</a>}</h2>
 							<p class="blog-comment-meta">{commentDateFormat.print(c.date)}</p>
-							{c.content} <!-- xml.Unparsed( c.content ) -->
+							<p>{c.content}</p>
 							<div ng-controller="commentCtrl">
 								<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Reply</button>
 								<div ng-show="commentForm">
