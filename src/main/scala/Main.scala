@@ -9,6 +9,9 @@ import spray.json.DefaultJsonProtocol._
 import spray.httpx.SprayJsonSupport._
 import MediaTypes._
 
+import shapeless._
+import shapeless.::
+
 import in.azeemarshad.common.sessionutils.SessionDirectives
 
 import concurrent.duration._
@@ -24,7 +27,15 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 
 	startServer(interface = args(0), port = 8080) {
 	
-		def blog[T]( domain: String, result: dao.Blog => T ) = await( dao.Blogs.find(domain) ) map result
+  def blog: Directive[dao.Blog :: HNil] = hostName.hflatMap {
+    case h :: HNil =>
+			await( dao.Blogs.find(h) ) match {
+				case None => reject
+				case Some( b ) => provide( b )
+			}
+  }
+		
+//		def blog[T]( domain: String, result: dao.Blog => T ) = await( dao.Blogs.find(domain) ) map result
 		
 		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
@@ -69,8 +80,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 						complete( Application.login(host) ) } ~
 			(post & formFields( 'email, 'password, 'rememberme ? "no" )) {
 				(email, password, rememberme) => Application.authenticate( host, email, password ) } } ~
-		(get & path( "register" ) & hostName) {
-			h => complete( blog(h, _ => Application.register) ) } ~
+		(get & path( "register" ) & blog) {
+			_ => complete( Application.register ) } ~
 		(get & path( "admin" ) & hostName & session) {
 			(host, session) => complete( Application.admin(host, session) ) } ~
 		(post & path( "post" ) & session & formFields( 'category.as[Int], 'headline, 'text, 'blogid.as[Int] )) {
@@ -85,31 +96,31 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// API routes
 		//
 		pathPrefix( "api"/"v1" ) {
-			(get & path("blog") & hostName) {
-				h => complete( blog(h, b => b) ) } ~
-			(get & path("category"/IntNumber) & hostName) {
-				(categoryid, h) => complete( blog(h, _ => API.category(categoryid)) ) } ~
-			(get & path("categories") & hostName) {
-				h => complete( blog(h, API.categories) ) } ~
-			(get & path("links") & hostName) {
-				h => complete( blog(h, API.links) ) } ~
-			(get & path("post"/IntNumber) & hostName) {
-				(postid, h) => complete( blog(h, _ => API.post(postid)) ) } ~
-			(get & path("recent"/IntNumber) & hostName) {
-				(count, h) => complete( blog(h, b => API.recent(b, count)) ) } ~
-			(get & path("posts"/IntNumber) & hostName) {
-				(count, h) => complete( blog(h, b => API.posts(b, count)) ) } ~
-			(get & path("users"/IntNumber) & hostName) {
-				(userid, h) => complete( blog(h, _ => API.users(userid)) ) } ~
-			(get & path("users"/Segment) & hostName) {
-				(email, h) => complete( blog(h, _ => API.users(email)) ) } ~
-			(get & path("users") & hostName) {
-				h => complete( blog(h, _ => API.users) ) } ~
-			(path("comments"/IntNumber) & hostName) { (postid, h) => 
-				(get & complete( blog(h, _ => API.comments(postid)) )) ~
+			(get & path("blog") & blog) {
+				b => complete( b ) } ~
+			(get & path("category"/IntNumber)) {
+				categoryid => complete( API.category(categoryid) ) } ~
+			(get & path("categories") & blog) {
+				b => complete( API.categories(b) ) } ~
+			(get & path("links") & blog) {
+				b => complete( API.links(b) ) } ~
+			(get & path("post"/IntNumber)) {
+				postid => complete( API.post(postid) ) } ~
+			(get & path("recent"/IntNumber) & blog) {
+				(count, b) => complete( API.recent(b, count) ) } ~
+			(get & path("posts"/IntNumber) & blog) {
+				(count, b) => complete( API.posts(b, count) ) } ~
+			(get & path("users"/IntNumber)) {
+				userid => complete( API.users(userid) ) } ~
+			(get & path("users"/Segment)) {
+				email => complete( API.users(email) ) } ~
+			(get & path("users")) {
+				complete( API.users ) } ~
+			(path("comments"/IntNumber)) { postid => 
+				(get & complete( API.comments(postid) )) ~
 				(post & formFields('authorid.as[Int]?, 'name?, 'email?, 'url, 'replytoid.as[Int]?, 'text)) {
 					(authorid, name, email, url, replytoid, text) =>
-						complete( blog(h, _ => API.comments(postid, authorid, name, email, url, replytoid, text)) ) } }
+						complete( API.comments(postid, authorid, name, email, url, replytoid, text) ) } }
 		}
 	}
 }

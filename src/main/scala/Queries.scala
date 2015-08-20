@@ -49,7 +49,7 @@ object Queries {
 	
 	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )
 	
-	def findAllCategories( blogid: Int ) = await(Categories.findByBlogid(blogid)) map (c => (c.id.get, c.name))
+	def findAllCategories( blogid: Int ) = await( Categories.findByBlogid(blogid) ) map (c => (c.id.get, c.name))
 	
 	def findAllLinks( blogid: Int ) = await( Links.findByBlogid(blogid) ) map (l => (l.url, l.text))
 	

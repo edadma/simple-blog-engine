@@ -18,7 +18,7 @@ object API extends SessionDirectives {
 	
 	def links( blog: dao.Blog ) = Queries.findAllLinks( blog.id.get )
 	
-	def categories( blog: dao.Blog ) = Queries.findAllCategories( blog.id.get )
+	def categories( blog: dao.Blog ) = dao.Categories.findByBlogid( blog.id.get )
 	
 	def category( categoryid: Int ) = dao.Categories.find( categoryid )
 	
