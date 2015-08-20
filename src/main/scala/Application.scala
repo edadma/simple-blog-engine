@@ -14,32 +14,23 @@ import collection.mutable.ListBuffer
 
 object Application extends SessionDirectives {
 	
-	def index( domain: String, session: Option[Session] ) =
-		dao.Blogs.find( domain ) map {
-			case Some( blog ) =>
-				val posts = Queries.findPostsBefore( blog.id.get, Instant.now, 10 )
-				
-				Views.blog( session, blog,
-					!posts.isEmpty && Queries.existsPostAfter(blog.id.get, posts.head.date),
-					!posts.isEmpty && Queries.existsPostBefore(blog.id.get, posts.last.date),
-					Queries.findRecent( blog.id.get, 5 ),
-					Queries.findAllCategories( blog.id.get ),
-					Queries.findArchives( blog.id.get ),
-					Queries.findAllLinks( blog.id.get ),
-					posts map { p => Queries.findComments( p.id ) match {case (comments, count) => (p, comments, count)} }
-					)
-			case None => Views.main( "Not a blog" )()( <h1>Not a blog</h1> )
-		}
-	
-	def login( domain: String ) = {
-		dao.Blogs.find( domain ) map {
-			case Some( blog ) =>
-				Views.login( blog )
-			case None => noSuchBlog( domain )
-		}
+	def index( blog: dao.Blog, user: Option[models.User] ) = {
+		val posts = Queries.findPostsBefore( blog.id.get, Instant.now, 10 )
+		
+		Views.blog( blog, user,
+			!posts.isEmpty && Queries.existsPostAfter(blog.id.get, posts.head.date),
+			!posts.isEmpty && Queries.existsPostBefore(blog.id.get, posts.last.date),
+			Queries.findRecent( blog.id.get, 5 ),
+			Queries.findAllCategories( blog.id.get ),
+			Queries.findArchives( blog.id.get ),
+			Queries.findAllLinks( blog.id.get ),
+			posts map { p => Queries.findComments( p.id ) match {case (comments, count) => (p, comments, count)} }
+			)
 	}
 	
-	def authenticate( host: String, email: String, password: String ) = {
+	def login( blog: dao.Blog ) = Views.login( blog )
+	
+	def authenticate( email: String, password: String ) = {
 		await( dao.Users.find(email, password) ) match {
 			case Some( u ) =>
 				setSession( "id" -> u.id.get.toString ) & redirect( "/", StatusCodes.SeeOther )
@@ -48,12 +39,7 @@ object Application extends SessionDirectives {
 		}
 	}
 	
-	def admin( domain: String, session: Session ) = {
-		dao.Blogs.find( domain ) map {
-			case Some( blog ) => Views.admin( blog, session )
-			case None => noSuchBlog( domain )
-		}
-	}
+	def admin( blog: dao.Blog, user: models.User ) = Views.admin( blog, user )
 	
 	def register = Views.register
 	

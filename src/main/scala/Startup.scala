@@ -30,7 +30,7 @@ object Startup {
 	val conf = ConfigFactory.load
 	
 	for (u <- conf.get[List[Map[String, String]]]("blog.init.users"))
-		Users.create( u("name"), u("email"), u("password"), None, None, None )
+		await( Users.create(u("name"), u("email"), u("password"), None, None, u.get("url")) )
 	
 	for (b <- conf.get[List[Map[String, String]]]("blog.init.blogs"))
 		Blogs.create( b("ownerid").toInt, b("domain"), b("title"), b("subtitle"), b("description"), b("footer") )

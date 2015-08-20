@@ -80,7 +80,7 @@ class RolesTable(tag: Tag) extends Table[Role](tag, "roles") {
 object Roles extends TableQuery(new RolesTable(_)) {
 	def find(userid: Int): Future[Seq[Role]] = db.run( filter(_.userid === userid) result )
 
-	def create( userid: Int, blogid: Int, role: String ) = db.run( this += Role(blogid, userid, role) )
+	def create( blogid: Int, userid: Int, role: String ) = db.run( this += Role(blogid, userid, role) )
 
 	def delete(userid: Int, blogid: Int): Future[Int] = {
 		db.run(filter(r => r.userid === userid && r.blogid === blogid).delete)

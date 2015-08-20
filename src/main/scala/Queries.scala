@@ -90,5 +90,7 @@ object Queries {
 			} )
 		(comments.toList, count)
 	}
+	
+	def findUser( userid: Int ) = await(Users.find(userid)) map (models.User.from( _ ))
 
 }

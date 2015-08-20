@@ -33,7 +33,9 @@ case class User(
 	bio: Option[String],
 	url: Option[String],
 	registered: Instant
-)
+) {
+	def is( blogid: Int, role: String ) = roles exists (r => r.blogid == blogid && r.role == role)
+}
 
 object User {
 	implicit val user = jsonFormat9( User.apply )

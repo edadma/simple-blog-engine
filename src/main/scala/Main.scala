@@ -10,7 +10,6 @@ import spray.httpx.SprayJsonSupport._
 import MediaTypes._
 
 import shapeless._
-import shapeless.::
 
 import in.azeemarshad.common.sessionutils.SessionDirectives
 
@@ -27,16 +26,32 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 
 	startServer(interface = args(0), port = 8080) {
 	
-  def blog: Directive[dao.Blog :: HNil] = hostName.hflatMap {
+	def blog: Directive[dao.Blog :: HNil] = hostName hflatMap {
     case h :: HNil =>
 			await( dao.Blogs.find(h) ) match {
 				case None => reject
 				case Some( b ) => provide( b )
 			}
-  }
-		
-//		def blog[T]( domain: String, result: dao.Blog => T ) = await( dao.Blogs.find(domain) ) map result
-		
+	}
+	
+	def user: Directive[dao.Blog :: Option[models.User] :: HNil] = (blog & optionalSession) hflatMap {
+    case b :: None :: HNil => hprovide( b :: None :: HNil )
+    case b :: Some( s ) :: HNil =>
+			Queries.findUser( s.data("id").toInt ) match {
+				case p@Some( u ) if u.roles.exists(_.blogid == b.id.get) => hprovide( b :: p :: HNil )
+				case None => reject
+			}
+	}
+	
+	def admin: Directive[dao.Blog :: models.User :: HNil] = (blog & session) hflatMap {
+		case b :: s :: HNil =>
+			Queries.findUser( s.data("id").toInt ) match {
+				case Some( u ) if u.roles.exists(r => r.blogid == b.id.get && r.role == "admin") => hprovide( b :: u :: HNil )
+				case None => reject
+				case _ => reject( AuthorizationFailedRejection )
+			}
+	}
+	
 		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
 		//
@@ -53,10 +68,10 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//
 		// application routes
 		//
-		(get & pathSingleSlash & hostName & optionalSession) {
-			(h, session) => complete( Application.index(h, session) ) } ~
-		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
-			(id, h, session) => complete(Application.index( h, session )) } ~
+		(get & pathSingleSlash & user) {
+			(b, u) => complete( Application.index(b, u) ) } ~
+// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
+// 			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {
 		// 			(id, host) => complete(Application.index( "localhost" )) } ~
 		// 		(get & path( "uncategorized" ) & hostName) {
@@ -71,19 +86,18 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// 			(year, month, host) => complete( (year, month, host) ) } ~
 		// 		(get & path( IntNumber~"-"~IntNumber~"-"~IntNumber ) & hostName) {
 		// 			(year, month, day, host) => complete( (year, month, day, host) ) } ~
-		(path( "login" ) & hostName) { host =>
-			(get & optionalSession) {
-				session =>
-					if (session != None)
-						redirect( "/", StatusCodes.SeeOther )
-					else
-						complete( Application.login(host) ) } ~
+		path( "login" ) {
+			(get & user) { (b, u) =>
+				if (u != None)
+					redirect( "/", StatusCodes.SeeOther )
+				else
+					complete( Application.login(b) ) } ~
 			(post & formFields( 'email, 'password, 'rememberme ? "no" )) {
-				(email, password, rememberme) => Application.authenticate( host, email, password ) } } ~
-		(get & path( "register" ) & blog) {
-			_ => complete( Application.register ) } ~
-		(get & path( "admin" ) & hostName & session) {
-			(host, session) => complete( Application.admin(host, session) ) } ~
+				(email, password, rememberme) => Application.authenticate( email, password ) } } ~
+		(get & path( "register" )) {
+			complete( Application.register ) } ~
+		(get & path( "admin" ) & admin) {
+			(b, u) => complete( Application.admin(b, u) ) } ~
 		(post & path( "post" ) & session & formFields( 'category.as[Int], 'headline, 'text, 'blogid.as[Int] )) {
 			(session, category, headline, text, blogid) => complete( Application.post(session, category, headline, text, blogid) ) } ~
 		(get & path( "logout" ) & session) {

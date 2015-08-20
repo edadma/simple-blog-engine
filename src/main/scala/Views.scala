@@ -89,10 +89,8 @@ object Views {
 			</div>
 		}
 	
-	def admin( blog: dao.Blog, session: Session ) =
+	def admin( blog: dao.Blog, user: models.User ) =
 		main( blog.domain )() {
-			val user = await( dao.Users.find(session.data("id").toInt) ).get
-			
 			<div class="container">
 
 				<form action="/post" method="POST">
@@ -114,7 +112,7 @@ object Views {
 			</div>
 		}
 		
-	def blog( session: Option[Session], b: dao.Blog, newer: Boolean, older: Boolean, recent: Seq[(Int, String)],
+	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[(Int, String)],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],
 						posts: Seq[(Post, Seq[CommentWithReplies], Int)] ) =
 		main( b.title ){
@@ -133,10 +131,13 @@ object Views {
 							<a class="blog-nav-item" href="#">Contact</a>
 							<a class="blog-nav-item" href="#">About</a> -->
 							{
-								if (session != None)
-									<a class="blog-nav-item navbar-right" href="/logout">Logout</a>
-									<a class="blog-nav-item navbar-right" href="/admin">Admin</a>
-									<a class="blog-nav-item navbar-right" href="/post">Post</a>
+								if (user != None)
+									<xml:group>
+										<a class="blog-nav-item navbar-right" href="/logout">Logout</a>
+										{if (user.get.is( b.id.get, "admin"))
+											<a class="blog-nav-item navbar-right" href="/admin">Admin</a><a class="blog-nav-item navbar-right" href="/post">Post</a>}
+										{if (user.get.is( b.id.get, "author")) <a class="blog-nav-item navbar-right" href="/post">Post</a>}
+									</xml:group>
 								else
 									<a class="blog-nav-item navbar-right" href="/login">Sign in</a>
 							}
@@ -158,7 +159,7 @@ object Views {
 								if (posts isEmpty)
 									<p>no posts</p>
 								else
-									posts map {case (p, c, count) => post(session, p, c, count)}
+									posts map {case (p, c, count) => post(user, p, c, count)}
 							}
 							
 							{
@@ -217,7 +218,7 @@ object Views {
 			</xml:group>
 		}
 	
-	def post( session: Option[Session], p: Post, cs: Seq[CommentWithReplies], count: Int ) =
+	def post( user: Option[models.User], p: Post, cs: Seq[CommentWithReplies], count: Int ) =
 		<xml:group>
 			<div class="blog-post">
 				<h2 class="blog-post-title">{p.title}</h2>
@@ -230,11 +231,11 @@ object Views {
 				<div>
 					{xml.Unparsed( p.content )}
 				</div>
-				{comments( session, p.id, cs, count )}
+				{comments( user, p.id, cs, count )}
 			</div>
 		</xml:group>
 	
-	def comments( session: Option[Session], postid: Int, cs: Seq[CommentWithReplies], count: Int ): xml.Node = {
+	def comments( user: Option[models.User], postid: Int, cs: Seq[CommentWithReplies], count: Int ): xml.Node = {
 		def commentsLevel( cs: Seq[CommentWithReplies], level: Int ): Seq[xml.Node] = {
 			for (CommentWithReplies(c, r) <- cs)
 				yield {
@@ -251,7 +252,7 @@ object Views {
 									<p>Required fields are marked *</p>
 									<div class="row">
 										<form action="/comment" method="POST" class="col-sm-5">
-											{if (session == None)
+											{if (user == None)
 												<div class="form-group">
 													<input type="text" class="form-control" name="name" placeholder="Your Name*" required=""/></div>
 												<div class="form-group">
@@ -279,33 +280,28 @@ object Views {
 					{commentsLevel( cs, 0 )}
 				</xml:group>
 			}
-			<!-- {if (session == None)
-				<a href="/register">Register to leave a comment</a>
-			else { -->
-				<div ng-controller="commentCtrl">
-					<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Leave a comment</button>
-					<div ng-show="commentForm">
-						<h1>Leave a comment</h1>
-						<a ng-click="commentForm = false">Cancel comment</a>
-						<p>Required fields are marked *</p>
-						<div class="row">
-							<form action="/comment" method="POST" class="col-sm-5">
-								{if (session == None)
-									<div class="form-group">
-										<input type="text" class="form-control" name="name" placeholder="Your Name*" required=""/></div>
-									<div class="form-group">
-										<input type="text" class="form-control" name="url" placeholder="Your URL"/></div>
-								}
+			<div ng-controller="commentCtrl">
+				<button class="btn btn-default btn-xs" ng-hide="commentForm" ng-click="commentForm = true">Leave a comment</button>
+				<div ng-show="commentForm">
+					<h1>Leave a comment</h1>
+					<a ng-click="commentForm = false">Cancel comment</a>
+					<p>Required fields are marked *</p>
+					<div class="row">
+						<form action="/comment" method="POST" class="col-sm-5">
+							{if (user == None)
 								<div class="form-group">
-									<textarea class="form-control" rows="4" cols="50" name="text" required=""></textarea></div>
-								<input type="hidden" name="postid" value={postid.toString}/>
-								<p><button type="submit" class="btn btn-default">Submit comment</button></p>
-							</form>
-						</div>
+									<input type="text" class="form-control" name="name" placeholder="Your Name*" required=""/></div>
+								<div class="form-group">
+									<input type="text" class="form-control" name="url" placeholder="Your URL"/></div>
+							}
+							<div class="form-group">
+								<textarea class="form-control" rows="4" cols="50" name="text" required=""></textarea></div>
+							<input type="hidden" name="postid" value={postid.toString}/>
+							<p><button type="submit" class="btn btn-default">Submit comment</button></p>
+						</form>
 					</div>
 				</div>
-				<!-- }
-			} -->
+			</div>
 		</div>
 	}
 	
