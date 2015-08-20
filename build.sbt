@@ -24,7 +24,9 @@ libraryDependencies ++= {
 	)
 }
 
-libraryDependencies += "ca.hyperreal" %% "spray-cookiebaker" % "0.1"
+libraryDependencies += "xyz.hyperreal" %% "spray-cookiebaker" % "0.1"
+
+libraryDependencies += "xyz.hyperreal" %% "gibberish" % "0.1"
 
 libraryDependencies += "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
 

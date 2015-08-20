@@ -134,7 +134,9 @@ object Views {
 							<a class="blog-nav-item" href="#">About</a> -->
 							{
 								if (session != None)
-									<a class="blog-nav-item navbar-right" href="/logout">Logout</a><a class="blog-nav-item navbar-right" href="/admin">Admin</a>
+									<a class="blog-nav-item navbar-right" href="/logout">Logout</a>
+									<a class="blog-nav-item navbar-right" href="/admin">Admin</a>
+									<a class="blog-nav-item navbar-right" href="/post">Post</a>
 								else
 									<a class="blog-nav-item navbar-right" href="/login">Sign in</a>
 							}
@@ -308,5 +310,3 @@ object Views {
 	}
 	
 }
-
-// ng-submit={s"""submit(${session.get.data("id")})"""} ng-controller="commentFormCtrl"
