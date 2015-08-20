@@ -39,12 +39,12 @@ object Application extends SessionDirectives {
 		}
 	}
 	
-	def admin( blog: dao.Blog, user: models.User ) = Views.admin( blog, user )
+	def authorPost( blog: dao.Blog, user: models.User ) = Views.authorPost( blog, user )
 	
 	def register = Views.register
 	
-	def post( session: Session, category: Int, headline: String, text: String, blogid: Int ) = {
-		dao.Posts.create( blogid, session.data("id").toInt, headline, text, Instant.now ) map (dao.Categorizations.create( _, category ))
+	def post( blog: dao.Blog, user: models.User, category: Int, headline: String, text: String ) = {
+		dao.Posts.create( blog.id.get, user.id, headline, text, Instant.now ) map (dao.Categorizations.create( _, category ))
 		redirectResponse( "/" )
 	}
 	

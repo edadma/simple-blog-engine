@@ -89,7 +89,7 @@ object Views {
 			</div>
 		}
 	
-	def admin( blog: dao.Blog, user: models.User ) =
+	def authorPost( blog: dao.Blog, user: models.User ) =
 		main( blog.domain )() {
 			<div class="container">
 
@@ -105,7 +105,6 @@ object Views {
 					</p>
 					<p><input type="text" name="headline" placeholder="Headline"/></p>
 					<p><textarea rows="4" cols="50" name="text" placeholder="Text"></textarea></p>
-					<input type="hidden" name="blogid" value={blog.id.get.toString}/>
 					<p class="submit"><input type="submit" value="Post"/></p>
 				</form>
 				

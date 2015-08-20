@@ -26,31 +26,31 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 
 	startServer(interface = args(0), port = 8080) {
 	
-	def blog: Directive[dao.Blog :: HNil] = hostName hflatMap {
-    case h :: HNil =>
-			await( dao.Blogs.find(h) ) match {
-				case None => reject
-				case Some( b ) => provide( b )
-			}
-	}
-	
-	def user: Directive[dao.Blog :: Option[models.User] :: HNil] = (blog & optionalSession) hflatMap {
-    case b :: None :: HNil => hprovide( b :: None :: HNil )
-    case b :: Some( s ) :: HNil =>
-			Queries.findUser( s.data("id").toInt ) match {
-				case p@Some( u ) if u.roles.exists(_.blogid == b.id.get) => hprovide( b :: p :: HNil )
-				case None => reject
-			}
-	}
-	
-	def admin: Directive[dao.Blog :: models.User :: HNil] = (blog & session) hflatMap {
-		case b :: s :: HNil =>
-			Queries.findUser( s.data("id").toInt ) match {
-				case Some( u ) if u.roles.exists(r => r.blogid == b.id.get && r.role == "admin") => hprovide( b :: u :: HNil )
-				case None => reject
-				case _ => reject( AuthorizationFailedRejection )
-			}
-	}
+		def blog: Directive[dao.Blog :: HNil] = hostName hflatMap {
+			case h :: HNil =>
+				await( dao.Blogs.find(h) ) match {
+					case None => reject
+					case Some( b ) => provide( b )
+				}
+		}
+		
+		def user: Directive[dao.Blog :: Option[models.User] :: HNil] = (blog & optionalSession) hflatMap {
+			case b :: None :: HNil => hprovide( b :: None :: HNil )
+			case b :: Some( s ) :: HNil =>
+				Queries.findUser( s.data("id").toInt ) match {
+					case p@Some( u ) if u.roles.exists(_.blogid == b.id.get) => hprovide( b :: p :: HNil )
+					case None => reject
+				}
+		}
+		
+		def admin: Directive[dao.Blog :: models.User :: HNil] = (blog & session) hflatMap {
+			case b :: s :: HNil =>
+				Queries.findUser( s.data("id").toInt ) match {
+					case Some( u ) if u.roles.exists(r => r.blogid == b.id.get && r.role == "admin") => hprovide( b :: u :: HNil )
+					case None => reject
+					case _ => reject( AuthorizationFailedRejection )
+				}
+		}
 	
 		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
@@ -96,10 +96,10 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				(email, password, rememberme) => Application.authenticate( email, password ) } } ~
 		(get & path( "register" )) {
 			complete( Application.register ) } ~
-		(get & path( "admin" ) & admin) {
-			(b, u) => complete( Application.admin(b, u) ) } ~
-		(post & path( "post" ) & session & formFields( 'category.as[Int], 'headline, 'text, 'blogid.as[Int] )) {
-			(session, category, headline, text, blogid) => complete( Application.post(session, category, headline, text, blogid) ) } ~
+		(get & path( "post" ) & admin) {
+			(b, u) => complete( Application.authorPost(b, u) ) } ~
+		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {
+			(b, u, category, headline, text) => complete( Application.post(b, u, category, headline, text) ) } ~
 		(get & path( "logout" ) & session) {
 			_ => clearSession & redirect( "/", StatusCodes.SeeOther ) } ~
 		(post & path( "comment" ) & session & formFields( 'postid.as[Int], 'replytoid.as[Int]?, 'text )) {
