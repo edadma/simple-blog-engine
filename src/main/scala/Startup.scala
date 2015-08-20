@@ -41,4 +41,6 @@ object Startup {
 	for (c <- conf.get[List[Map[String, String]]]("blog.init.categories"))
 		Categories.create( c("blogid").toInt, c("name"), c("description") )
 	
+	println( conf.opt[String]("asdf") )
+	
 }
