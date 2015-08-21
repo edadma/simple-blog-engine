@@ -25,6 +25,8 @@ object Queries {
 	def findPostsBefore( blogid: Int, before: Instant, limit: Int ) = dbrun( Posts.findBefore(blogid, before) join Users on (_.authorid === _.id)
 		take limit result ) map {case (p, u) => models.Post.from(p, u)}
 	
+	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )
+	
 	def existsPostBefore( blogid: Int, before: Instant ) = dbrun( (Posts.findBefore(blogid, before) exists) result )
 	
 	def existsPostAfter( blogid: Int, after: Instant ) = dbrun( (Posts.findAfter(blogid, after) exists) result )
@@ -46,8 +48,6 @@ object Queries {
 	
 	def findCategories( postid: Int ) = dbrun( Categorizations.find(postid) join Categories on (_.categoryid === _.id) map {
 		case (_, c) => (c.id, c.name)} result )
-	
-	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )
 	
 	def findAllCategories( blogid: Int ) = await( Categories.findByBlogid(blogid) ) map (c => (c.id.get, c.name))
 	

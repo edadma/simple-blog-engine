@@ -97,45 +97,14 @@ object Views {
 				<script src="/coffee/post.js"></script>
 			</xml:group>
 		} {
-			<div class="container" ng-app="post">
+			<div class="container" ng-app="post" ng-controller="PostController">
 
 				<div class="row">
-					<form>
-						<div class="col-md-8">
-									
-								<div class="form-group">
-									<label>Post Text</label>
-									<textarea class="form-control" rows="10" ng-model="text"></textarea></div>
-						</div>
-						
-						<div class="col-md-4">
-							<div class="form-group">
-								<label>Category</label>
-								<select ng-model="category" class="form-control">
-									{
-										var first = true
-										
-										for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-											yield
-												if (first) {
-													first = false
-													<option value={id.toString} selected="">{name}</option>
-												} else
-													<option value={id.toString}>{name}</option>
-									}
-								</select></div>
-								
-							<div class="form-group">
-								<label>Post Title</label>
-								<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
-								
-							<button type="submit" class="btn btn-default">Submit Post</button>
-						</div>
-					</form>
-				</div>
-
-				<div class="row">
+				
 					<div class="col-md-9">
+						<div class="form-group">
+							<label>Post Text</label>
+							<textarea class="form-control" rows="10" ng-model="text"></textarea></div>
 						<div class="panel panel-default">
 							<div class="panel-heading">Preview</div>
 							<div class="panel-body">
@@ -148,11 +117,40 @@ object Views {
 							</div>
 						</div>
 					</div>
+					
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Post Title</label>
+							<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+						<div class="form-group">
+							<label>Categories</label><br/>
+							{
+								for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+									yield
+										<label><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/> {name}</label><br/>
+							}
+							</div>
+						<button ng-click="submit()" class="btn btn-default">Submit Post</button>
+					</div>
 				</div>
 				
 			</div>
 		}
 		
+// 							<select ng-model="category" class="form-control">
+// 								{
+// 									var first = true
+// 									
+// 									for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+// 										yield
+// 											if (first) {
+// 												first = false
+// 												<option value={id.toString} selected="">{name}</option>
+// 											} else
+// 												<option value={id.toString}>{name}</option>
+// 								}
+// 							</select></div>
+
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[(Int, String)],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],
 						posts: Seq[(Post, Seq[CommentWithReplies], Int)] ) =
