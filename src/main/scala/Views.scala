@@ -94,6 +94,7 @@ object Views {
 			<xml:group>
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
+				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
 				<script src="/coffee/post.js"></script>
 			</xml:group>
 		} {

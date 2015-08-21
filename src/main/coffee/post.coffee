@@ -1,6 +1,8 @@
-app = angular.module( 'post', ['ngSanitize'] )
+app = angular.module( 'post', ['ngSanitize', 'ngResource'] )
 
 app.controller( 'PostController', ['$scope', ($scope) ->
+	Posts = $resource( '/api/v1/posts' )
+	
 	$scope.categories = {}
 	
 	$scope.submit = ->
