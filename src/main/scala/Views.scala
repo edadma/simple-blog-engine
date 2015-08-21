@@ -90,23 +90,65 @@ object Views {
 		}
 	
 	def authorPost( blog: dao.Blog, user: models.User ) =
-		main( blog.domain )() {
-			<div class="container">
+		main( blog.domain ) {
+			<xml:group>
+				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
+				<script src="/coffee/post.js"></script>
+			</xml:group>
+		} {
+			<div class="container" ng-app="post">
 
-				<form action="/post" method="POST">
-					<h1>Welcome {user.name}</h1>
-					<p>
-						<select name="category">
-							{
-								for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-									yield <option value={id.toString}>{name}</option>
-							}
-						</select>
-					</p>
-					<p><input type="text" name="headline" placeholder="Headline"/></p>
-					<p><textarea rows="4" cols="50" name="text" placeholder="Text"></textarea></p>
-					<p class="submit"><input type="submit" value="Post"/></p>
-				</form>
+				<div class="row">
+					<form>
+						<div class="col-md-8">
+									
+								<div class="form-group">
+									<label>Post Text</label>
+									<textarea class="form-control" rows="10" ng-model="text"></textarea></div>
+						</div>
+						
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Category</label>
+								<select ng-model="category" class="form-control">
+									{
+										var first = true
+										
+										for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+											yield
+												if (first) {
+													first = false
+													<option value={id.toString} selected="">{name}</option>
+												} else
+													<option value={id.toString}>{name}</option>
+									}
+								</select></div>
+								
+							<div class="form-group">
+								<label>Post Title</label>
+								<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+								
+							<button type="submit" class="btn btn-default">Submit Post</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="row">
+					<div class="col-md-9">
+						<div class="panel panel-default">
+							<div class="panel-heading">Preview</div>
+							<div class="panel-body">
+								<style scoped=""> {
+									io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
+								}
+								</style>
+								<h2 class="blog-post-title"><span ng-bind="title"/></h2>
+								<div ng-bind-html="text"></div>
+							</div>
+						</div>
+					</div>
+				</div>
 				
 			</div>
 		}
