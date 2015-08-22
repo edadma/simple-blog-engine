@@ -131,7 +131,10 @@ object Views {
 										<label><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/> {name}</label><br/>
 							}
 							</div>
-						<button ng-click="submit()" class="btn btn-default">Submit Post</button>
+						<div class="form-group">
+							<button ng-click="submit()" class="btn btn-default">Submit Post</button></div>
+						<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
+						<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
 					</div>
 				</div>
 				
