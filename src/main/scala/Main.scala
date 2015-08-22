@@ -13,6 +13,8 @@ import shapeless._
 
 import in.azeemarshad.common.sessionutils.SessionDirectives
 
+import models._
+
 import concurrent.duration._
 import util.{Success, Failure}
 
@@ -120,6 +122,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				b => complete( API.links(b) ) } ~
 			(get & path("post"/IntNumber)) {
 				postid => complete( API.post(postid) ) } ~
+			(post & path("post") & admin & entity(as[PostEntity])) {
+				(b, u, p) => complete( API.post(b, u, p) ) } ~
 			(get & path("recent"/IntNumber) & blog) {
 				(count, b) => complete( API.recent(b, count) ) } ~
 			(get & path("posts"/IntNumber) & blog) {

@@ -104,8 +104,8 @@ object Views {
 				
 					<div class="col-md-9">
 						<div class="form-group">
-							<label>Post Text</label>
-							<textarea class="form-control" rows="10" ng-model="text"></textarea></div>
+							<label>Post Content</label>
+							<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
 						<div class="panel panel-default">
 							<div class="panel-heading">Preview</div>
 							<div class="panel-body">
@@ -114,7 +114,7 @@ object Views {
 								}
 								</style>
 								<h2 class="blog-post-title"><span ng-bind="title"/></h2>
-								<div ng-bind-html="text"></div>
+								<div ng-bind-html="content"></div>
 							</div>
 						</div>
 					</div>
