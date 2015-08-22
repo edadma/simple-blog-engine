@@ -5,6 +5,13 @@ app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
 	
 	$scope.categories = {}
 	
+	$scope.clear = ->
+		$scope.categories = {}
+		$scope.error = false
+		$scope.posted = false
+		$scope.title = ""
+		$scope.content = ""
+		
 	$scope.submit = ->
 		categories = []
 		

@@ -101,41 +101,71 @@ object Views {
 			<div class="container" ng-app="post" ng-controller="PostController">
 
 				<div class="row">
-				
-					<div class="col-md-9">
-						<div class="form-group">
-							<label>Post Content</label>
-							<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
-						<div class="panel panel-default">
-							<div class="panel-heading">Preview</div>
-							<div class="panel-body">
-								<style scoped=""> {
-									io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
-								}
-								</style>
-								<h2 class="blog-post-title"><span ng-bind="title"/></h2>
-								<div ng-bind-html="content"></div>
-							</div>
-						</div>
-					</div>
 					
 					<div class="col-md-3">
-						<div class="form-group">
-							<label>Post Title</label>
-							<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
-						<div class="form-group">
-							<label>Categories</label><br/>
-							{
-								for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-									yield
-										<label><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/> {name}</label><br/>
-							}
-							</div>
-						<div class="form-group">
-							<button ng-click="submit()" class="btn btn-default">Submit Post</button></div>
-						<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
-						<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
 					</div>
+					
+					<div class="col-md-9">
+					
+						<div class="row">
+							
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Post Title</label>
+									<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+							</div>
+							
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Categories</label><br/>
+									{
+										for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+											yield
+												<label style="font-weight: normal;"><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/>&nbsp;{name}&nbsp;&nbsp;</label>
+									}
+									</div>
+							</div>
+						
+							<div class="col-md-2">
+								<div class="form-group">
+									<button ng-click="submit()" class="btn btn-default">Submit</button></div>
+									<button ng-click="clear()" class="btn btn-default">Clear</button>
+							</div>
+								
+						</div>
+						
+						<div class="row">
+							
+							<div class="col-md-10">
+								<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
+								<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
+							</div>
+							
+						</div>
+						
+						<div class="row">
+						
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Post Content</label>
+									<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
+								<div class="panel panel-default">
+									<div class="panel-heading">Preview</div>
+									<div class="panel-body">
+										<style scoped=""> {
+											io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
+										}
+										</style>
+										<h2 class="blog-post-title"><span ng-bind="title"/></h2>
+										<div ng-bind-html="content"></div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+							
+					</div>
+							
 				</div>
 				
 			</div>
