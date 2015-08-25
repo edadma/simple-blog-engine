@@ -1,9 +1,17 @@
 app = angular.module 'post', ['ngSanitize', 'ngResource']
 
 app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
-	Post = $resource '/api/v1/post'
+	Posts = $resource '/api/v1/posts'
 	
 	$scope.categories = {}
+	
+	getPosts = ->
+		Posts.query (result, response) ->
+			$scope.posts = result
+		,	(response) ->
+			$scope.error = response.data
+	
+	getPosts()
 	
 	$scope.clear = ->
 		$scope.categories = {}
@@ -27,12 +35,13 @@ app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
 			$scope.error = "There is no category."
 		else
 			$scope.error = false
-			Post.save
+			Posts.save
 				title: $scope.title
 				content: $scope.content
 				categories: categories
 			, (result, response) ->
 				$scope.posted = true
+				getPosts()
 			, (response) ->
 				$scope.error = response.data
 	]

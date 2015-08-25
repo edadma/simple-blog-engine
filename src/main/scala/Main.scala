@@ -120,14 +120,14 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				b => complete( API.categories(b) ) } ~
 			(get & path("links") & blog) {
 				b => complete( API.links(b) ) } ~
-			(get & path("post"/IntNumber)) {
-				postid => complete( API.post(postid) ) } ~
-			(post & path("post") & admin & entity(as[PostEntity])) {
-				(b, u, p) => complete( API.post(b, u, p) ) } ~
+			(get & path("posts"/IntNumber)) {
+				postid => complete( API.postsGet(postid) ) } ~
+			(get & path("posts") & blog) {
+				b => complete( API.postsGet(b) ) } ~
+			(post & path("posts") & admin & entity(as[PostEntity])) {
+				(b, u, p) => complete( API.postsPost(b, u, p) ) } ~
 			(get & path("recent"/IntNumber) & blog) {
 				(count, b) => complete( API.recent(b, count) ) } ~
-			(get & path("posts"/IntNumber) & blog) {
-				(count, b) => complete( API.posts(b, count) ) } ~
 			(get & path("users"/IntNumber)) {
 				userid => complete( API.users(userid) ) } ~
 			(get & path("users"/Segment)) {

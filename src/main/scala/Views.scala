@@ -71,7 +71,7 @@ object Views {
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
-			<div class="container">
+			<div class="container-fluid">
 				<form class="form-register" ng-submit="submit()" ng-controller="registrationFormCtrl">
 					<h2 class="form-register-heading">Please register</h2>
 					<div class="form-group">
@@ -103,6 +103,9 @@ object Views {
 				<div class="row">
 					
 					<div class="col-md-3">
+						<div ng-repeat="post in posts">
+							<span ng-bind="post.title"/>
+						</div>
 					</div>
 					
 					<div class="col-md-9">
@@ -185,7 +188,7 @@ object Views {
 // 								}
 // 							</select></div>
 
-	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[(Int, String)],
+	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],
 						posts: Seq[(Post, Seq[CommentWithReplies], Int)] ) =
 		main( b.title ){
@@ -256,7 +259,7 @@ object Views {
 							<div class="sidebar-module">
 								<h4>Recent Posts</h4>
 								<ol class="list-unstyled">
-									{for ((id, title) <- recent) yield <li><a href={"/" + id}>{title}</a></li>}
+									{for (p <- recent) yield <li><a href={"/" + p.id}>{p.title}</a></li>}
 								</ol>
 							</div>
 							

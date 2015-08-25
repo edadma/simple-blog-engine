@@ -25,7 +25,13 @@ object Queries {
 	def findPostsBefore( blogid: Int, before: Instant, limit: Int ) = dbrun( Posts.findBefore(blogid, before) join Users on (_.authorid === _.id)
 		take limit result ) map {case (p, u) => models.Post.from(p, u)}
 	
-	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )
+	def findPosts( blogid: Int ) = dbrun( Posts.findByBlogid(blogid) join Users on (_.authorid === _.id) result ) map
+		{case (p, u) => models.Post.from(p, u)}
+	
+	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) join Users on (_.authorid === _.id) take limit result ) map
+		{case (p, u) => models.Post.from(p, u)}
+	
+//	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )
 	
 	def existsPostBefore( blogid: Int, before: Instant ) = dbrun( (Posts.findBefore(blogid, before) exists) result )
 	
