@@ -71,7 +71,7 @@ object Views {
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
-			<div class="container-fluid">
+			<div class="container">
 				<form class="form-register" ng-submit="submit()" ng-controller="registrationFormCtrl">
 					<h2 class="form-register-heading">Please register</h2>
 					<div class="form-group">
@@ -89,105 +89,157 @@ object Views {
 			</div>
 		}
 	
-	def authorPost( blog: dao.Blog, user: models.User ) =
-		main( blog.domain ) {
+	def admin( blog: dao.Blog, user: models.User ) =
+		main( "Dashboard: " + blog.domain ) {
 			<xml:group>
+				<link href="/css/admin.css" rel="stylesheet"/>
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
 				<script src="/coffee/post.js"></script>
 			</xml:group>
 		} {
-			<div class="container" ng-app="post" ng-controller="PostController">
-
-				<div class="row">
-					
-					<div class="col-md-3">
-						<div ng-repeat="post in posts">
-							<span ng-bind="post.title"/>
+			<xml:group>
+				<nav class="navbar navbar-inverse navbar-fixed-top">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href="#">Blog Title</a>
+						</div>
+						<div id="navbar" class="navbar-collapse collapse">
+							<ul class="nav navbar-nav navbar-right">
+								<li><a href="#">Dashboard</a></li>
+								<li><a href="#">Settings</a></li>
+								<li><a href="#">Profile</a></li>
+								<li><a href="#">Logout</a></li>
+							</ul>
+							<form class="navbar-form navbar-right">
+								<input type="text" class="form-control" placeholder="Search..."/>
+							</form>
 						</div>
 					</div>
-					
-					<div class="col-md-9">
-					
-						<div class="row">
-							
-							<div class="col-md-4">
-								<div class="form-group">
-									<label>Post Title</label>
-									<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
-							</div>
-							
-							<div class="col-md-6">
-								<div class="form-group">
-									<label>Categories</label><br/>
-									{
-										for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-											yield
-												<label style="font-weight: normal;"><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/>&nbsp;{name}&nbsp;&nbsp;</label>
-									}
-									</div>
-							</div>
+				</nav>
+				
+				<div class="container-fluid" ng-app="post" ng-controller="PostController">
+
+					<div class="row">
 						
-							<div class="col-md-2">
-								<div class="form-group">
-									<button ng-click="submit()" class="btn btn-default">Submit</button></div>
-									<button ng-click="clear()" class="btn btn-default">Clear</button>
+						<div class="col-sm-3 col-md-2 sidebar">
+							<ul class="nav nav-sidebar">
+								<!-- <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li> -->
+								<li><a href="#">Posts</a></li>
+							</ul>
+						</div>
+						
+						<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+							<h1 class="page-header">Blog Posts</h1>
+
+							<div class="table-responsive">
+								<table class="table table-striped table-hover">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Date</th>
+											<th>Author</th>
+											<th>Title</th>
+											<th>Status</th>
+											<!-- <th>Comments</th> -->
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="post in posts" ng-click="edit(post)">
+											<td>{"{{post.id}}"}</td>
+											<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
+											<td>{"{{post.author}}"}</td>
+											<td>{"{{post.title}}"}</td>
+											<td>live</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							
+							<h2 class="sub-header">{"{{mode == 'post' ? 'New Post' : 'Editing Post #' + id}}"}</h2>
+							
+							<div class="row">
+								
+								<div class="col-md-10">
+								
+									<div class="row">
+									
+										<div class="col-md-5">
+											<div class="form-group">
+												<label>Post Title</label>
+												<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+										</div>
+										
+										<div class="col-md-7">
+											<div class="form-group">
+												<label>Categories</label><br/>
+												{
+													for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+														yield
+															<label style="font-weight: normal;"><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/>&nbsp;{name}&nbsp;&nbsp;</label>
+												}
+												</div>
+										</div>
+								
+										<div class="col-md-12">
+											<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
+											<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
+										</div>
+								
+									</div>
+								</div>
+								
+								<div class="col-md-2">
+									<div class="form-group">
+										<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block">New</button>
+										</div>
+									<div class="form-group">
+										<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block">Submit</button>
+										<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block">Update</button>
+										</div>
+									<div class="form-group">
+										<button ng-click="publish()" class="btn btn-default btn-block">Publish</button></div>
+										<button ng-click="clear()" class="btn btn-default btn-block">Clear</button>
+								</div>
+							
+							</div>
+							
+							<div class="row">
+							
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Post Content</label>
+										<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
+									<div class="panel panel-default">
+										<div class="panel-heading">Preview</div>
+										<div class="panel-body">
+											<style scoped=""> {
+												io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
+											}
+											</style>
+											<h2 class="blog-post-title"><span ng-bind="title"/></h2>
+											<div ng-bind-html="content"></div>
+										</div>
+									</div>
+								</div>
+								
 							</div>
 								
 						</div>
-						
-						<div class="row">
-							
-							<div class="col-md-10">
-								<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
-								<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
-							</div>
-							
-						</div>
-						
-						<div class="row">
-						
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Post Content</label>
-									<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
-								<div class="panel panel-default">
-									<div class="panel-heading">Preview</div>
-									<div class="panel-body">
-										<style scoped=""> {
-											io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
-										}
-										</style>
-										<h2 class="blog-post-title"><span ng-bind="title"/></h2>
-										<div ng-bind-html="content"></div>
-									</div>
-								</div>
-							</div>
-							
-						</div>
-							
+								
 					</div>
-							
+					
 				</div>
-				
-			</div>
+			</xml:group>
 		}
 		
-// 							<select ng-model="category" class="form-control">
-// 								{
-// 									var first = true
-// 									
-// 									for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-// 										yield
-// 											if (first) {
-// 												first = false
-// 												<option value={id.toString} selected="">{name}</option>
-// 											} else
-// 												<option value={id.toString}>{name}</option>
-// 								}
-// 							</select></div>
-
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],
 						posts: Seq[(Post, Seq[CommentWithReplies], Int)] ) =
@@ -211,7 +263,7 @@ object Views {
 									<xml:group>
 										<a class="blog-nav-item navbar-right" href="/logout">Logout</a>
 										{if (user.get.is( b.id.get, "admin"))
-											<a class="blog-nav-item navbar-right" href="/admin">Admin</a><a class="blog-nav-item navbar-right" href="/post">Post</a>}
+											<a class="blog-nav-item navbar-right" href="/admin">Admin</a>}
 										{if (user.get.is( b.id.get, "author")) <a class="blog-nav-item navbar-right" href="/post">Post</a>}
 									</xml:group>
 								else
@@ -302,7 +354,7 @@ object Views {
 					if (p.categories isEmpty)
 						<a href="/uncategorized">Uncategorized</a>
 					else
-						xml.Unparsed(p.categories map {case (id, cat) => """<a href="/category/""" + id + """">""" + cat + "</a>"} mkString (", "))
+						xml.Unparsed(p.categories map {case (name, id) => """<a href="/category/""" + id + """">""" + name + "</a>"} mkString (", "))
 				} | <a href={s"#comments-${p.id}"}>{count} comment{if (count == 1) "" else "s"}</a></p>
 				<div>
 					{xml.Unparsed( p.content )}

@@ -39,7 +39,7 @@ object Application extends SessionDirectives {
 		}
 	}
 	
-	def authorPost( blog: dao.Blog, user: models.User ) = Views.authorPost( blog, user )
+	def admin( blog: dao.Blog, user: models.User ) = Views.admin( blog, user )
 	
 	def register = Views.register
 	

@@ -52,8 +52,8 @@ object Queries {
 		buf.toList
 	}
 	
-	def findCategories( postid: Int ) = dbrun( Categorizations.find(postid) join Categories on (_.categoryid === _.id) map {
-		case (_, c) => (c.id, c.name)} result )
+	def findCategories( postid: Int ) = Map( dbrun( Categorizations.find(postid) join Categories on (_.categoryid === _.id) map {
+		case (_, c) => (c.name, c.id)} result ): _* )
 	
 	def findAllCategories( blogid: Int ) = await( Categories.findByBlogid(blogid) ) map (c => (c.id.get, c.name))
 	

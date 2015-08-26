@@ -76,7 +76,7 @@ case class Post(
 	title: String,
 	content: String,
 	date: Instant,
-	categories: Seq[(Int, String)]
+	categories: Map[String, Int]
 )
 
 object Post {

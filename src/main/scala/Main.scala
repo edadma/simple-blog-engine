@@ -98,8 +98,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				(email, password, rememberme) => Application.authenticate( email, password ) } } ~
 		(get & path( "register" )) {
 			complete( Application.register ) } ~
-		(get & path( "post" ) & admin) {
-			(b, u) => complete( Application.authorPost(b, u) ) } ~
+		(get & path( "admin" ) & admin) {
+			(b, u) => complete( Application.admin(b, u) ) } ~
 		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {
 			(b, u, category, headline, text) => complete( Application.post(b, u, category, headline, text) ) } ~
 		(get & path( "logout" ) & session) {
