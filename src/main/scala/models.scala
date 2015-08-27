@@ -58,14 +58,15 @@ object User {
 // 	implicit val blog = jsonFormat7(Blog.apply)
 // }
 
-case class PostEntity(
+case class PostJson(
+	id: Option[Int],
 	title: String,
 	content: String,
 	categories: Seq[Int]
 )
 
-object PostEntity {
-	implicit val postEntity = jsonFormat3( PostEntity.apply )
+object PostJson {
+	implicit val postJson = jsonFormat4( PostJson.apply )
 }
 
 case class Post(

@@ -25,11 +25,13 @@ object API extends SessionDirectives {
 	
 	def postsGet( postid: Int ) = dao.Posts.find( postid ) map (u => u map (models.Post.from(_)))
 	
-	def postsPost( blog: dao.Blog, user: models.User, post: models.PostEntity ) =
+	def postsPost( blog: dao.Blog, user: models.User, post: models.PostJson ) =
 		dao.Posts.create( blog.id.get, user.id, post.title, post.content, Instant.now ) map { postid =>
 			post.categories foreach (dao.Categorizations.create( postid, _ ))
 			Map( "postid" -> postid )
 		}
+	
+	def postsPost( pid: Int, post: models.PostJson ) = dao.Posts.update( pid, post.title, post.content ) map (u => Map( "updated" -> u ))
 	
 //	def recent( blog: dao.Blog, limit: Int ) = Queries.findRecent( blog.id.get, limit )
 	

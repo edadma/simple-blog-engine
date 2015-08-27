@@ -145,6 +145,7 @@ object Views {
 										<tr>
 											<th>#</th>
 											<th>Date</th>
+											<th>Time</th>
 											<th>Author</th>
 											<th>Title</th>
 											<th>Status</th>
@@ -155,8 +156,9 @@ object Views {
 										<tr ng-repeat="post in posts" ng-click="edit(post)">
 											<td>{"{{post.id}}"}</td>
 											<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
+											<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
 											<td>{"{{post.author}}"}</td>
-											<td>{"{{post.title}}"}</td>
+											<td>{"{{post.title | limitTo: 25}}"}</td>
 											<td>live</td>
 										</tr>
 									</tbody>
@@ -190,7 +192,7 @@ object Views {
 								
 										<div class="col-md-12">
 											<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
-											<div class="alert alert-success" ng-show="posted" ng-bind="'Content posted.'"></div>
+											<div class="alert alert-success" ng-show="success" ng-bind="success"></div>
 										</div>
 								
 									</div>

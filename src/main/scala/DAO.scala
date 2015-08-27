@@ -168,6 +168,8 @@ object Posts extends TableQuery(new PostsTable(_)) {
 		db.run(filter(_.id === id).delete)
 	}
 	
+	def update( id: Int, title: String, content: String ) = db.run( filter(_.id === id) map (p => (p.title, p.content)) update (title, content) )
+	
 	def list: Future[Seq[Post]] = db.run(this.result)
 
 	def findByBlogid( blogid: Int ) = filter (_.blogid === blogid) sortBy (_.date.desc)

@@ -1,7 +1,7 @@
 app = angular.module 'post', ['ngSanitize', 'ngResource']
 
 app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
-	Posts = $resource '/api/v1/posts'
+	Posts = $resource '/api/v1/posts/:id'
 	
 	$scope.categories = {}
 	$scope.mode = 'post'	#or 'edit'
@@ -25,7 +25,7 @@ app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
 		$scope.mode = 'edit'
 		$scope.categories = post.categories
 		$scope.error = false
-		$scope.posted = false
+		$scope.success = false
 		$scope.title = post.title
 		$scope.content = post.content
 		$scope.id = post.id
@@ -45,12 +45,16 @@ app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
 			$scope.error = "There is no category."
 		else
 			$scope.error = false
-			Posts.save
+			Posts.save {id: $scope.id},
 				title: $scope.title
 				content: $scope.content
 				categories: categories
 			, (result, response) ->
-				$scope.posted = true
+				if result.updated != 1
+					$scope.error = "update failed"
+				else
+					$scope.success = "post updated"
+					
 				getPosts()
 			, (response) ->
 				$scope.error = response.data	
@@ -82,7 +86,7 @@ app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
 				content: $scope.content
 				categories: categories
 			, (result, response) ->
-				$scope.posted = true
+				$scope.success = "post submitted"
 				getPosts()
 			, (response) ->
 				$scope.error = response.data

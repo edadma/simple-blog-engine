@@ -72,8 +72,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
-// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
-// 			(id, h, session) => complete(Application.index( h, session )) } ~
+		// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
+		// 			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {
 		// 			(id, host) => complete(Application.index( "localhost" )) } ~
 		// 		(get & path( "uncategorized" ) & hostName) {
@@ -124,8 +124,10 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				postid => complete( API.postsGet(postid) ) } ~
 			(get & path("posts") & blog) {
 				b => complete( API.postsGet(b) ) } ~
-			(post & path("posts") & admin & entity(as[PostEntity])) {
+			(post & path("posts") & admin & entity(as[PostJson])) {
 				(b, u, p) => complete( API.postsPost(b, u, p) ) } ~
+			(post & path("posts"/IntNumber) & admin & entity(as[PostJson])) {
+				(pid, _, _, p) => complete( API.postsPost(pid, p) ) } ~
 			(get & path("recent"/IntNumber) & blog) {
 				(count, b) => complete( API.recent(b, count) ) } ~
 			(get & path("users"/IntNumber)) {
