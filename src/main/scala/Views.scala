@@ -109,7 +109,7 @@ object Views {
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
 							</button>
-							<a class="navbar-brand" href="#">Blog Title</a>
+							<a class="navbar-brand" href="/">{blog.title}</a>
 						</div>
 						<div id="navbar" class="navbar-collapse collapse">
 							<ul class="nav navbar-nav navbar-right">
@@ -153,7 +153,7 @@ object Views {
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="post in posts" ng-click="edit(post)">
+										<tr ng-repeat="post in posts" ng-click="edit(post)" ng-cloak="">
 											<td>{"{{post.id}}"}</td>
 											<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
 											<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
@@ -165,7 +165,7 @@ object Views {
 								</table>
 							</div>
 							
-							<h2 class="sub-header">{"{{mode == 'post' ? 'New Post' : 'Editing Post #' + id}}"}</h2>
+							<h2 class="sub-header" ng-cloak="">{"{{mode == 'post' ? 'New Post' : 'Editing Post #' + id}}"}</h2>
 							
 							<div class="row">
 								
@@ -190,7 +190,7 @@ object Views {
 												</div>
 										</div>
 								
-										<div class="col-md-12">
+										<div class="col-md-12" ng-cloak="">
 											<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
 											<div class="alert alert-success" ng-show="success" ng-bind="success"></div>
 										</div>
@@ -198,7 +198,7 @@ object Views {
 									</div>
 								</div>
 								
-								<div class="col-md-2">
+								<div class="col-md-2" ng-cloak="">
 									<div class="form-group">
 										<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block">New</button>
 										</div>
