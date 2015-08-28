@@ -55,9 +55,9 @@ libraryDependencies ++= Seq(
 	"com.github.tototoshi" %% "slick-joda-mapper" % "2.0.0"
 	)
 
-//mainClass in assembly := Some( "ca.hyperreal.blog.Boot" )
+mainClass in assembly := Some( "xyz.hyperreal.blog.Main" )
 
-jarName in assembly := name.value + "-" + version.value + ".jar"
+assemblyJarName in assembly := name.value + "-" + version.value + ".jar"
 
 Revolver.settings
 

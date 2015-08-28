@@ -15,7 +15,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2")
 
 addSbtPlugin("me.lessis" % "coffeescripted-sbt" % "0.2.3")
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.12.0")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.13.0")
 
 //addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.0.3")
 
