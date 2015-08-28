@@ -159,7 +159,7 @@ object Views {
 											<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
 											<td>{"{{post.author}}"}</td>
 											<td>{"{{post.title | limitTo: 25}}"}</td>
-											<td>live</td>
+											<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
 										</tr>
 									</tbody>
 								</table>
@@ -179,7 +179,7 @@ object Views {
 												<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
 										</div>
 										
-										<div class="col-md-7">
+										<div class="col-md-5">
 											<div class="form-group">
 												<label>Categories</label><br/>
 												{
@@ -189,6 +189,22 @@ object Views {
 												}
 												</div>
 										</div>
+									
+										<div class="col-md-2">
+											<div class="form-group">
+												<label>Status</label><br/>
+												<label class="radio-inline">
+													<input type="radio" ng-model="status" value="live"/> live
+												</label>
+												<label class="radio-inline">
+													<input type="radio" ng-model="status" value="draft"/> draft
+												</label>
+											</div>
+										</div>
+										
+									</div>
+									
+									<div class="row">
 								
 										<div class="col-md-12" ng-cloak="">
 											<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
@@ -207,8 +223,7 @@ object Views {
 										<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block">Update</button>
 										</div>
 									<div class="form-group">
-										<button ng-click="publish()" class="btn btn-default btn-block">Publish</button></div>
-										<button ng-click="clear()" class="btn btn-default btn-block">Clear</button>
+										<button ng-click="clear()" class="btn btn-default btn-block">Clear</button></div>
 								</div>
 							
 							</div>
@@ -286,10 +301,12 @@ object Views {
 					
 						<div class="col-sm-9 blog-main">
 							{
-								if (posts isEmpty)
+								val live = posts filter (_._1.status == "live")
+								
+								if (live isEmpty)
 									<p>no posts</p>
 								else
-									posts map {case (p, c, count) => post(user, p, c, count)}
+									live map {case (p, c, count) => post(user, p, c, count)}
 							}
 							
 							{

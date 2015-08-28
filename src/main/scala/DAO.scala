@@ -170,7 +170,8 @@ object Posts extends TableQuery(new PostsTable(_)) {
 		db.run(filter(_.id === id).delete)
 	}
 	
-	def update( id: Int, title: String, content: String ) = db.run( filter(_.id === id) map (p => (p.title, p.content)) update (title, content) )
+	def update( id: Int, title: String, content: String, status: String ) = db.run( filter(_.id === id) map (p => (p.title, p.content, p.status))
+		update (title, content, status) )
 	
 	def list: Future[Seq[Post]] = db.run(this.result)
 

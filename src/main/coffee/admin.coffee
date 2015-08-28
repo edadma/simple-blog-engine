@@ -5,6 +5,7 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 	
 	$scope.categories = {}
 	$scope.mode = 'post'
+	$scope.status = 'live'
 	
 	getPosts = ->
 		Posts.query (result, response) ->
@@ -16,8 +17,9 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 	
 	$scope.clear = ->
 		$scope.categories = {}
+		$scope.status = 'live'
 		$scope.error = false
-		$scope.posted = false
+		$scope.success = false
 		$scope.title = ""
 		$scope.content = ""
 		
@@ -28,6 +30,7 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 		$scope.success = false
 		$scope.title = post.title
 		$scope.content = post.content
+		$scope.status = post.status
 		$scope.id = post.id
 		
 	$scope.update = ->
@@ -48,6 +51,7 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 			Posts.save {id: $scope.id},
 				title: $scope.title
 				content: $scope.content
+				status: $scope.status
 				categories: categories
 			, (result, response) ->
 				if result.updated != 1
@@ -84,6 +88,7 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 			Posts.save
 				title: $scope.title
 				content: $scope.content
+				status: $scope.status
 				categories: categories
 			, (result, response) ->
 				$scope.success = "post submitted"
