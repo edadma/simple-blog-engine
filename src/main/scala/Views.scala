@@ -96,7 +96,7 @@ object Views {
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
-				<script src="/coffee/post.js"></script>
+				<script src="/coffee/admin.js"></script>
 			</xml:group>
 		} {
 			<xml:group>
@@ -125,7 +125,7 @@ object Views {
 					</div>
 				</nav>
 				
-				<div class="container-fluid" ng-app="post" ng-controller="PostController">
+				<div class="container-fluid" ng-app="admin" ng-controller="AdminController">
 
 					<div class="row">
 						

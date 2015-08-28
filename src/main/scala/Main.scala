@@ -100,8 +100,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 			complete( Application.register ) } ~
 		(get & path( "admin" ) & admin) {
 			(b, u) => complete( Application.admin(b, u) ) } ~
-		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {
-			(b, u, category, headline, text) => complete( Application.post(b, u, category, headline, text) ) } ~
+// 		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {
+// 			(b, u, category, headline, text) => complete( Application.post(b, u, category, headline, text) ) } ~
 		(get & path( "logout" ) & session) {
 			_ => clearSession & redirect( "/", StatusCodes.SeeOther ) } ~
 		(post & path( "comment" ) & session & formFields( 'postid.as[Int], 'replytoid.as[Int]?, 'text )) {

@@ -143,6 +143,7 @@ case class Post(
 	title: String,
 	content: String,
 	date: Instant,
+	status: String,
 	id: Option[Int] = None
 )
 
@@ -153,15 +154,16 @@ class PostsTable(tag: Tag) extends Table[Post](tag, "posts") {
 	def title = column[String]("title")
 	def content = column[String]("content")
 	def date = column[Instant]("date")
+	def status = column[String]("status")
 	
-	def * = (blogid, authorid, title, content, date, id.?) <> (Post.tupled, Post.unapply)
+	def * = (blogid, authorid, title, content, date, status, id.?) <> (Post.tupled, Post.unapply)
 }
 
 object Posts extends TableQuery(new PostsTable(_)) {
 	def find(id: Int): Future[Option[Post]] = db.run( filter(_.id === id) result ) map (_.headOption)
 
-	def create( blogid: Int, authorid: Int, title: String, content: String, date: Instant ): Future[Int] = {
-		db.run(this returning map(_.id) += Post(blogid, authorid, title, content, date))
+	def create( blogid: Int, authorid: Int, title: String, content: String, date: Instant, status: String ): Future[Int] = {
+		db.run(this returning map(_.id) += Post(blogid, authorid, title, content, date, status))
 	}
 
 	def delete(id: Int): Future[Int] = {

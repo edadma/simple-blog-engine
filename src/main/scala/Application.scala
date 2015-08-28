@@ -43,10 +43,10 @@ object Application extends SessionDirectives {
 	
 	def register = Views.register
 	
-	def post( blog: dao.Blog, user: models.User, category: Int, headline: String, text: String ) = {
-		dao.Posts.create( blog.id.get, user.id, headline, text, Instant.now ) map (dao.Categorizations.create( _, category ))
-		redirectResponse( "/" )
-	}
+// 	def post( blog: dao.Blog, user: models.User, category: Int, headline: String, text: String ) = {
+// 		dao.Posts.create( blog.id.get, user.id, headline, text, Instant.now ) map (dao.Categorizations.create( _, category ))
+// 		redirectResponse( "/" )
+// 	}
 	
 	def comment( session: Session, postid: Int, replytoid: Option[Int], text: String ) = {
 		dao.Comments.create( postid, Some(session.data("id").toInt), None, None, None, Instant.now, replytoid, text )

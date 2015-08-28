@@ -1,10 +1,10 @@
-app = angular.module 'post', ['ngSanitize', 'ngResource']
+app = angular.module 'admin', ['ngSanitize', 'ngResource']
 
-app.controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
+app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 	Posts = $resource '/api/v1/posts/:id'
 	
 	$scope.categories = {}
-	$scope.mode = 'post'	#or 'edit'
+	$scope.mode = 'post'
 	
 	getPosts = ->
 		Posts.query (result, response) ->
