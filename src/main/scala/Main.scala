@@ -1,5 +1,8 @@
 package xyz.hyperreal.blog
 
+import com.typesafe.config.ConfigFactory
+import com.github.kxbmap.configs._
+
 import akka.actor.ActorSystem
 
 import spray.routing._
@@ -22,11 +25,13 @@ import util.{Success, Failure}
 object Main extends App with SimpleRoutingApp with SessionDirectives {
 
 	Startup
+
+  val conf = ConfigFactory.load
 	
 	implicit val system = ActorSystem("on-spray-can")
 	implicit val context = system.dispatcher
 
-	startServer(interface = args(0), port = 8080) {
+  startServer( conf.get[String]("blog.interface"), conf.get[Int]("blog.port") ) {
 	
 		def blog: Directive[dao.Blog :: HNil] = hostName hflatMap {
 			case h :: HNil =>
