@@ -97,9 +97,10 @@ object Views {
 				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
 				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
 				<script src="/coffee/admin.js"></script>
+				<script src="/coffee/post.js"></script>
 			</xml:group>
 		} {
-			<xml:group>
+			<div ng-app="admin" ng-controller="AdminController">
 				<nav class="navbar navbar-default navbar-fixed-top">
 					<div class="container-fluid">
 						<div class="navbar-header">
@@ -113,10 +114,10 @@ object Views {
 						</div>
 						<div id="navbar" class="navbar-collapse collapse">
 							<ul class="nav navbar-nav navbar-right">
-								<li><a href="#">Dashboard</a></li>
+								<!-- <li><a href="/admin">Dashboard</a></li>
 								<li><a href="#">Settings</a></li>
-								<li><a href="#">Profile</a></li>
-								<li><a href="#">Logout</a></li>
+								<li><a href="#">Profile</a></li> -->
+								<li><a href="/logout">Logout</a></li>
 							</ul>
 							<form class="navbar-form navbar-right">
 								<input type="text" class="form-control" placeholder="Search..."/>
@@ -125,9 +126,9 @@ object Views {
 					</div>
 				</nav>
 				
-				<div class="container-fluid" ng-app="admin" ng-controller="AdminController">
+				<div class="container-fluid">
 
-					<div class="row">
+					<div class="row" ng-controller="PostController">
 						
 						<div class="col-sm-3 col-md-2 sidebar">
 							<ul class="nav nav-sidebar">
@@ -217,15 +218,10 @@ object Views {
 								</div>
 								
 								<div class="col-md-2" ng-cloak="">
-									<div class="form-group">
-										<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block">New</button>
-										</div>
-									<div class="form-group">
-										<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block">Submit</button>
-										<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block">Update</button>
-										</div>
-									<div class="form-group">
-										<button ng-click="clear()" class="btn btn-default btn-block">Clear</button></div>
+									<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block thin">New</button>
+									<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block thin">Submit</button>
+									<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block thin">Update</button>
+									<button ng-click="clear()" class="btn btn-default btn-block thin">Clear</button>
 								</div>
 							
 							</div>
@@ -256,7 +252,7 @@ object Views {
 					</div>
 					
 				</div>
-			</xml:group>
+			</div>
 		}
 		
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
