@@ -146,8 +146,9 @@ object Views {
 											<th>#</th>
 											<th>Date</th>
 											<th>Time</th>
-											<th>Author</th>
 											<th>Title</th>
+											<th>Categories</th>
+											<th>Author</th>
 											<th>Status</th>
 											<!-- <th>Comments</th> -->
 										</tr>
@@ -157,8 +158,9 @@ object Views {
 											<td>{"{{post.id}}"}</td>
 											<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
 											<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
-											<td>{"{{post.author}}"}</td>
 											<td>{"{{post.title | limitTo: 25}}"}</td>
+											<td>{"{{keys(post.categories)}}"}</td>
+											<td>{"{{post.author}}"}</td>
 											<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
 										</tr>
 									</tbody>

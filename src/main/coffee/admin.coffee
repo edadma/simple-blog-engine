@@ -24,14 +24,15 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 		$scope.content = ""
 		
 	$scope.edit = (post) ->
+		postcopy = angular.copy( post )
 		$scope.mode = 'edit'
-		$scope.categories = post.categories
+		$scope.categories = postcopy.categories
 		$scope.error = false
 		$scope.success = false
-		$scope.title = post.title
-		$scope.content = post.content
-		$scope.status = post.status
-		$scope.id = post.id
+		$scope.title = postcopy.title
+		$scope.content = postcopy.content
+		$scope.status = postcopy.status
+		$scope.id = postcopy.id
 		
 	$scope.update = ->
 		categories = []
@@ -95,4 +96,8 @@ app.controller 'AdminController', ['$scope', '$resource', ($scope, $resource) ->
 				getPosts()
 			, (response) ->
 				$scope.error = response.data
+				
+	$scope.keys = (obj) ->
+		(for k, v of obj
+			k).join(', ')
 	]

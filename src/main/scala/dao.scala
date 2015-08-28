@@ -8,6 +8,6 @@ package object dao {
 	
 	val db = Database.forConfig( "blog.db" )
 	
-	def dbrun[R]( a: DBIOAction[R, NoStream, Nothing] ) = await( db.run(a) )
+	def dbrun[R]( a: DBIOAction[R, NoStream, Nothing] ) = await( dao.db.run(a) )
 	
 }

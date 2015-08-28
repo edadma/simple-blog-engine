@@ -55,6 +55,8 @@ object Queries {
 	def findCategories( postid: Int ) = Map( dbrun( Categorizations.find(postid) join Categories on (_.categoryid === _.id) map {
 		case (_, c) => (c.name, c.id)} result ): _* )
 	
+	def findCategorizations( postid: Int ) = dbrun( Categorizations.find(postid) map (_.categoryid) result )
+	
 	def findAllCategories( blogid: Int ) = await( Categories.findByBlogid(blogid) ) map (c => (c.id.get, c.name))
 	
 	def findAllLinks( blogid: Int ) = await( Links.findByBlogid(blogid) ) map (l => (l.url, l.text))

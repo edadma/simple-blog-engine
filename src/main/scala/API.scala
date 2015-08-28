@@ -31,8 +31,15 @@ object API extends SessionDirectives {
 			Map( "postid" -> postid )
 		}
 	
-	def postsPost( pid: Int, post: models.PostJson ) = dao.Posts.update( pid, post.title, post.content, post.status ) map (u => Map( "updated" -> u ))
-	
+	def postsPost( pid: Int, post: models.PostJson ) = {
+		val categorizations: Seq[Int] = Queries.findCategorizations( pid )
+		
+		post.categories filterNot (categorizations contains _) foreach (dao.Categorizations.create( pid, _ ))
+		categorizations filterNot (post.categories contains _) foreach (dao.Categorizations.delete( pid, _ ))
+		
+		dao.Posts.update( pid, post.title, post.content, post.status ) map (u => Map( "updated" -> u ))
+	}
+
 //	def recent( blog: dao.Blog, limit: Int ) = Queries.findRecent( blog.id.get, limit )
 	
 	def postsGet( blog: dao.Blog ) = Queries.findPosts( blog.id.get )
