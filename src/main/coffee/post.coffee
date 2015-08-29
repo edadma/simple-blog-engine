@@ -22,7 +22,7 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 		$scope.content = ""
 		
 	$scope.delete = (post) ->
-			$scope.message = {type: 'info', text: 'deleting post'}
+		$scope.message = {type: 'info', text: 'deleting post'}
 		Posts.delete {id: $scope.id},
 		(result, response) ->
 			if result.deleted != 1
@@ -72,9 +72,6 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 				getPosts()
 			, (response) ->
 				$scope.message = {type: 'error', text: response.data}
-	
-	$scope.publish = ->
-	
 	
 	$scope.post = ->
 		$scope.mode = 'post'
