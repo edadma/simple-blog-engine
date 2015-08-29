@@ -21,6 +21,17 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 		$scope.title = ""
 		$scope.content = ""
 		
+	$scope.delete = (post) ->
+		Posts.delete {id: $scope.id},
+		(result, response) ->
+			if result.deleted != 1
+				$scope.error = "delete failed"
+			else
+				$scope.success = "post deleted"
+			getPosts()
+		, (response) ->
+			$scope.error = response.data
+
 	$scope.edit = (post) ->
 		postcopy = angular.copy( post )
 		$scope.mode = 'edit'

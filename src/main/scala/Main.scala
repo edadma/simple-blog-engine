@@ -133,6 +133,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				(b, u, p) => complete( API.postsPost(b, u, p) ) } ~
 			(post & path("posts"/IntNumber) & admin & entity(as[PostJson])) {
 				(pid, _, _, p) => complete( API.postsPost(pid, p) ) } ~
+			(delete & path("posts"/IntNumber)) {
+				postid => complete( API.postsDelete(postid) ) } ~
 			(get & path("recent"/IntNumber) & blog) {
 				(count, b) => complete( API.recent(b, count) ) } ~
 			(get & path("users"/IntNumber)) {

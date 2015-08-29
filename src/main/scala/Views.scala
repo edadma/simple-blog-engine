@@ -221,7 +221,8 @@ object Views {
 									<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block thin">New</button>
 									<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block thin">Submit</button>
 									<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block thin">Update</button>
-									<button ng-click="clear()" class="btn btn-default btn-block thin">Clear</button>
+									<button ng-show="mode == 'post'" ng-click="clear()" class="btn btn-default btn-block thin">Clear</button>
+									<button ng-show="mode == 'edit'" ng-click="delete()" class="btn btn-default btn-block thin">Delete</button>
 								</div>
 							
 							</div>

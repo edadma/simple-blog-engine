@@ -39,6 +39,8 @@ object API extends SessionDirectives {
 		
 		dao.Posts.update( pid, post.title, post.content, post.status ) map (u => Map( "updated" -> u ))
 	}
+	
+	def postsDelete( postid: Int ) = dao.Posts.delete( postid ) map (u => Map( "deleted" -> u ))
 
 //	def recent( blog: dao.Blog, limit: Int ) = Queries.findRecent( blog.id.get, limit )
 	
