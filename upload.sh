@@ -1,0 +1,1 @@
+rsync -azP -e ssh --delete /home/ed/web-projects/simple-blog-engine/target/scala-2.11/simple-blog-engine-*.jar ed@hyperreal.xyz:/home/ed
