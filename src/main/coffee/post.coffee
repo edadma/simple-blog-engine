@@ -4,30 +4,31 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 	$scope.categories = {}
 	$scope.mode = 'post'
 	$scope.status = 'live'
+	$scope.message = {type: 'none'}
 	
 	getPosts = ->
 		Posts.query (result, response) ->
 			$scope.posts = result
 		,	(response) ->
-			$scope.error = response.data
+			$scope.message = {type: 'error', text: response.data}
 	
 	getPosts()
 	
 	$scope.clear = ->
 		$scope.categories = {}
 		$scope.status = 'live'
-		$scope.error = false
-		$scope.success = false
+		$scope.message = {type: 'none'}
 		$scope.title = ""
 		$scope.content = ""
 		
 	$scope.delete = (post) ->
+			$scope.message = {type: 'info', text: 'deleting post'}
 		Posts.delete {id: $scope.id},
 		(result, response) ->
 			if result.deleted != 1
-				$scope.error = "delete failed"
+				$scope.message = {type: 'error', text: "delete failed"}
 			else
-				$scope.success = "post deleted"
+				$scope.message = {type: 'success', text: "post deleted"}
 			getPosts()
 		, (response) ->
 			$scope.error = response.data
@@ -36,8 +37,7 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 		postcopy = angular.copy( post )
 		$scope.mode = 'edit'
 		$scope.categories = postcopy.categories
-		$scope.error = false
-		$scope.success = false
+		$scope.message = {type: 'none'}
 		$scope.title = postcopy.title
 		$scope.content = postcopy.content
 		$scope.status = postcopy.status
@@ -51,13 +51,13 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 				categories.push( parseInt(v) )
 				
 		if !$scope.title
-			$scope.error = "There is no title."
+			$scope.message = {type: 'warning', text: "There is no title."}
 		else if !$scope.content
-			$scope.error = "There is no content."
+			$scope.message = {type: 'warning', text: "There is no content."}
 		else if categories.length == 0
-			$scope.error = "There is no category."
+			$scope.message = {type: 'warning', text: "There is no category."}
 		else
-			$scope.error = false
+			$scope.message = {type: 'info', text: 'updating post'}
 			Posts.save {id: $scope.id},
 				title: $scope.title
 				content: $scope.content
@@ -65,13 +65,13 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 				categories: categories
 			, (result, response) ->
 				if result.updated != 1
-					$scope.error = "update failed"
+					$scope.message = {type: 'error', text: "update failed"}
 				else
-					$scope.success = "post updated"
+					$scope.message = {type: 'success', text: "post updated"}
 					
 				getPosts()
 			, (response) ->
-				$scope.error = response.data	
+				$scope.message = {type: 'error', text: response.data}
 	
 	$scope.publish = ->
 	
@@ -88,23 +88,23 @@ angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', (
 				categories.push( parseInt(v) )
 				
 		if !$scope.title
-			$scope.error = "There is no title."
+			$scope.message = {type: 'warning', text: "There is no title."}
 		else if !$scope.content
-			$scope.error = "There is no content."
+			$scope.message = {type: 'warning', text: "There is no content."}
 		else if categories.length == 0
-			$scope.error = "There is no category."
+			$scope.message = {type: 'warning', text: "There is no category."}
 		else
-			$scope.error = false
+			$scope.message = {type: 'info', text: 'submitting post'}
 			Posts.save
 				title: $scope.title
 				content: $scope.content
 				status: $scope.status
 				categories: categories
 			, (result, response) ->
-				$scope.success = "post submitted"
+				$scope.message = {type: 'success', text: "post submitted"}
 				getPosts()
 			, (response) ->
-				$scope.error = response.data
+				$scope.message = {type: 'error', text: response.data}
 				
 	$scope.keys = (obj) ->
 		(for k, v of obj

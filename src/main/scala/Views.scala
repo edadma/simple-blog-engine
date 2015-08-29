@@ -210,8 +210,7 @@ object Views {
 									<div class="row">
 								
 										<div class="col-md-12" ng-cloak="">
-											<div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
-											<div class="alert alert-success" ng-show="success" ng-bind="success"></div>
+											<ng-include src="'message.html'"></ng-include>
 										</div>
 								
 									</div>
