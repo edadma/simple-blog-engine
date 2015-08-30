@@ -22,13 +22,15 @@ object Queries {
 // 			case (b, u) => models.Blog(b.id.get, u.name, b.domain, b.title, b.subtitle, b.description, b.footer)
 // 	})
 	
-	def findPostsBefore( blogid: Int, before: Instant, limit: Int ) = dbrun( Posts.findBefore(blogid, before) join Users on (_.authorid === _.id)
+	def findPost( postid: Int ): Seq[models.Post] = await( Posts.find(postid) ) map (p => Seq( models.Post.from(p) )) getOrElse Seq.empty
+	
+	def findPostsBefore( blogid: Int, before: Instant, limit: Int ): Seq[models.Post] = dbrun( Posts.findBefore(blogid, before) filter (_.status === "live") join Users on (_.authorid === _.id)
 		take limit result ) map {case (p, u) => models.Post.from(p, u)}
 	
 	def findPosts( blogid: Int ) = dbrun( Posts.findByBlogid(blogid) join Users on (_.authorid === _.id) result ) map
 		{case (p, u) => models.Post.from(p, u)}
 	
-	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) join Users on (_.authorid === _.id) take limit result ) map
+	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) filter (_.status === "live") join Users on (_.authorid === _.id) take limit result ) map
 		{case (p, u) => models.Post.from(p, u)}
 	
 //	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )

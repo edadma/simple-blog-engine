@@ -14,9 +14,7 @@ import collection.mutable.ListBuffer
 
 object Application extends SessionDirectives {
 	
-	def index( blog: dao.Blog, user: Option[models.User] ) = {
-		val posts = Queries.findPostsBefore( blog.id.get, Instant.now, 10 )
-		
+	def blogView( blog: dao.Blog, user: Option[models.User], posts: Seq[models.Post] ) = {
 		Views.blog( blog, user,
 			!posts.isEmpty && Queries.existsPostAfter(blog.id.get, posts.head.date),
 			!posts.isEmpty && Queries.existsPostBefore(blog.id.get, posts.last.date),
@@ -27,6 +25,10 @@ object Application extends SessionDirectives {
 			posts map { p => Queries.findComments( p.id ) match {case (comments, count) => (p, comments, count)} }
 			)
 	}
+	
+	def index( blog: dao.Blog, user: Option[models.User] ) = blogView( blog, user, Queries.findPostsBefore(blog.id.get, Instant.now, 10) )
+	
+	def post( postid: Int, blog: dao.Blog, user: Option[models.User]) = blogView( blog, user, Queries.findPost(postid) )
 	
 	def login( blog: dao.Blog ) = Views.login( blog )
 	

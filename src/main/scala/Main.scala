@@ -87,8 +87,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// 			(time, host) => complete(Application.index( "localhost" )) } ~
 		// 		(get & path( "a"/LongNumber ) & hostName) {
 		// 			(time, host) => complete(Application.index( "localhost" )) } ~
-		// 		(get & path( IntNumber ) & hostName) {
-		// 			(post, host) => complete( (post, host) ) } ~
+		(get & path( IntNumber ) & user) {
+			(p, b, u) => complete( Application.post(p, b, u) ) } ~
 		// 		(get & path( IntNumber~"-"~IntNumber ) & hostName) {
 		// 			(year, month, host) => complete( (year, month, host) ) } ~
 		// 		(get & path( IntNumber~"-"~IntNumber~"-"~IntNumber ) & hostName) {

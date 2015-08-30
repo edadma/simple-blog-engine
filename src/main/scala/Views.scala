@@ -309,12 +309,10 @@ object Views {
 					
 						<div class="col-sm-9 blog-main">
 							{
-								val live = posts filter (_._1.status == "live")
-								
-								if (live isEmpty)
+								if (posts isEmpty)
 									<p>no posts</p>
 								else
-									live map {case (p, c, count) => post(user, p, c, count)}
+									posts map {case (p, c, count) => post(user, p, c, count)}
 							}
 							
 							{
