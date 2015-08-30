@@ -40,7 +40,7 @@ object Views {
 		</html>
 	
 	def login( blog: dao.Blog ) = {
-		main( blog.domain ) {
+		main( "Login: " + blog.title ) {
 			<link href="/css/signin.css" rel="stylesheet"/>
 		} {
 			<div class="container">
@@ -90,7 +90,7 @@ object Views {
 		}
 	
 	def admin( blog: dao.Blog, user: models.User ) =
-		main( "Dashboard: " + blog.domain ) {
+		main( "Dashboard: " + blog.title ) {
 			<xml:group>
 				<link href="/css/admin.css" rel="stylesheet"/>
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
