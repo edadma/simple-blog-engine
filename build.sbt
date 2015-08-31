@@ -32,7 +32,7 @@ libraryDependencies += "xyz.hyperreal" %% "gibberish" % "0.1"
 
 libraryDependencies += "org.scalatra.scalate" %% "scalate-core" % "1.7.0"
 
-libraryDependencies += "com.github.kxbmap" %% "configs" % "0.2.4"
+libraryDependencies += "com.github.kxbmap" %% "configs" % "0.2.5"
 
 libraryDependencies ++= Seq(
 	"org.slf4j" % "slf4j-api" % "1.7.7",

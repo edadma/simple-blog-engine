@@ -27,6 +27,7 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 	Startup
 
   val conf = ConfigFactory.load
+	val sys = conf.opt[String]( "blog.sys" )
 	
 	implicit val system = ActorSystem("on-spray-can")
 	implicit val context = system.dispatcher
@@ -43,18 +44,13 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		
 		def user: Directive[dao.Blog :: Option[models.User] :: HNil] = (blog & optionalSession) hflatMap {
 			case b :: None :: HNil => hprovide( b :: None :: HNil )
-			case b :: Some( s ) :: HNil =>
-				Queries.findUser( s.data("id").toInt ) match {
-					case p@Some( u ) if u.roles.exists(_.blogid == b.id.get) => hprovide( b :: p :: HNil )
-					case None => reject
-				}
+			case b :: Some( s ) :: HNil => hprovide( b :: Queries.findUser(s.data("id").toInt) :: HNil )
 		}
 		
 		def admin: Directive[dao.Blog :: models.User :: HNil] = (blog & session) hflatMap {
 			case b :: s :: HNil =>
 				Queries.findUser( s.data("id").toInt ) match {
 					case Some( u ) if u.roles.exists(r => r.blogid == b.id.get && r.role == "admin") => hprovide( b :: u :: HNil )
-					case None => reject
 					case _ => reject( AuthorizationFailedRejection )
 				}
 		}
@@ -77,6 +73,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
+		(get & pathSingleSlash & validate( sys != None, "blog.sys not set" ) & host( sys.getOrElse("") )) {
+			complete( Application.sys ) } ~
 		// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
 		// 			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {

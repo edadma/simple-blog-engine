@@ -39,6 +39,25 @@ object Views {
 			</body>
 		</html>
 	
+	def sys = {
+		
+		main( "Create Blog" ) {
+			<link href="/css/signin.css" rel="stylesheet"/>
+		} {
+			<div class="container">
+				<div class="row">
+					<div class="col-md-2 col-md-offset-4">
+						<a class="btn btn-lg btn-primary btn-block" href="/register">Register</a>
+					</div>
+					<div class="col-md-2">
+						<a class="btn btn-lg btn-primary btn-block" href="/create">Create Blog</a>
+					</div>
+				</div>
+			</div>
+		}
+		
+	}
+	
 	def login( blog: dao.Blog ) = {
 		main( "Login: " + blog.title ) {
 			<link href="/css/signin.css" rel="stylesheet"/>
