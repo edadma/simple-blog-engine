@@ -90,8 +90,8 @@ object Views {
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
-			<div class="container">
-				<form class="form-register" ng-submit="submit()" ng-controller="registrationFormCtrl">
+			<div class="container" ng-app="register">
+				<form class="form-register" ng-submit="submit()" ng-controller="registerFormController">
 					<h2 class="form-register-heading">Please register</h2>
 					<div class="form-group">
 						<input type="email" class="form-control" ng-model="email" placeholder="Email address*" required="true" autofocus="true"/></div>
@@ -100,7 +100,7 @@ object Views {
 					<div class="form-group">
 						<input type="text" class="form-control" ng-model="name" placeholder="Name*" required="true"/></div>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="url" placeholder="URL"/></div>
+						<input type="url" class="form-control" ng-model="url" placeholder="URL"/></div>
 					<div class="form-group">
 						<textarea class="form-control" rows="4" cols="50" ng-model="bio" placeholder="Bio"></textarea></div>
 					<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
@@ -139,7 +139,7 @@ object Views {
 								<li><a href="/logout">Logout</a></li>
 							</ul>
 							<form class="navbar-form navbar-right">
-								<input type="text" class="form-control" placeholder="Search..."/>
+								<input type="search" class="form-control" placeholder="Search..."/>
 							</form>
 						</div>
 					</div>

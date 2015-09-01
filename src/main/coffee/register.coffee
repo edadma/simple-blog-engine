@@ -1,7 +1,10 @@
 app = angular.module( 'register', [] )
 
-app.controller( 'registrationFormCtrl', ['$scope', ($scope) ->
-	$scope.text = ""
+app.controller( 'registerFormController', ['$scope', ($scope) ->
+	
+	Users = $resource '/api/v1/users/:id'
+	
+	$scope.email = ""
 	
 	$scope.submit = ->
 		console.log userid
