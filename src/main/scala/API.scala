@@ -17,6 +17,8 @@ import java.net.URLDecoder
 
 object API extends SessionDirectives {
 	
+	def blogsGet( domain: String ) = dao.Blogs.find( domain )
+	
 	def links( blog: dao.Blog ) = Queries.findAllLinks( blog.id.get )
 	
 	def categories( blog: dao.Blog ) = dao.Categories.findByBlogid( blog.id.get )

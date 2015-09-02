@@ -43,8 +43,8 @@ object Views {
 		main( "Blog Creation" ) {
 			<xml:group>
 				<link href="/css/create.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
 				<script src="/coffee/create.js"></script>
 			</xml:group>
 		} {
@@ -52,8 +52,11 @@ object Views {
 				<form class="form-create" ng-submit="submit()">
 					<h2 class="form-create-heading">Blog Creation</h2>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="blog.subdomain" ng-model-options="{debounce: 500}" ngChange="check()" 
-							placeholder="Subdomain" required="" autofocus=""/></div>
+						<input type="text" class="form-control" ng-model="blog.subdomain" ng-model-options="{debounce: 500}" ng-change="check()" 
+							placeholder="Subdomain" required="" autofocus=""/>
+							<p class="text-danger" ng-show="subdomain == 'exists'">This subdomain already exists.</p>
+							<p class="text-success" ng-show="subdomain == 'available'">This subdomain is available.</p>
+						</div>
 					<div class="form-group">
 						<input type="text" class="form-control" ng-model="blog.title" placeholder="Title" required="" autofocus=""/></div>
 					<div class="form-group">
@@ -115,8 +118,8 @@ object Views {
 		main( "Registration" ) {
 			<xml:group>
 				<link href="/css/register.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
@@ -144,9 +147,9 @@ object Views {
 		main( "Dashboard: " + blog.title ) {
 			<xml:group>
 				<link href="/css/admin.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.3/angular-sanitize.min.js"></script>
-				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular-sanitize.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
 				<script src="/coffee/admin.js"></script>
 				<script src="/coffee/post.js"></script>
 			</xml:group>
@@ -313,7 +316,7 @@ object Views {
 			<xml:group>
 				<link href="/css/blog.css" rel="stylesheet"/>
 				
-				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
 				<script src="/coffee/blog.js"></script>
 				{xml.Unparsed(b.head)}
 			</xml:group>
