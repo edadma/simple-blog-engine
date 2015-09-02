@@ -52,13 +52,22 @@ object Views {
 				<form class="form-create" ng-submit="submit()">
 					<h2 class="form-create-heading">Blog Creation</h2>
 					<div class="form-group">
+						<input type="text" class="form-control" ng-model="blog.subdomain" ng-model-options="{debounce: 500}" ngChange="check()" 
+							placeholder="Subdomain" required="" autofocus=""/></div>
+					<div class="form-group">
 						<input type="text" class="form-control" ng-model="blog.title" placeholder="Title" required="" autofocus=""/></div>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="blog.title" placeholder="Subtitle" required=""/></div>
+						<input type="text" class="form-control" ng-model="blog.subtitle" placeholder="Subtitle" required=""/></div>
 					<div class="form-group">
-						<textarea class="form-control" rows="4" cols="50" ng-model="blog.description" placeholder="Description" required=""></textarea></div>
+						<input type="text" class="form-control" ng-model="blog.categories" placeholder="Categories (comma separated list)" required=""/></div>
 					<div class="form-group">
-						<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button></div>
+						<textarea class="form-control" rows="3" ng-model="blog.description" placeholder="Description" required=""></textarea></div>
+					<div class="form-group">
+						<textarea class="form-control" rows="2" ng-model="blog.description" placeholder="Head code (Optional)"></textarea></div>
+					<div class="form-group">
+						<textarea class="form-control" rows="2" ng-model="blog.description" placeholder="Footer code (Optional)"></textarea></div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-lg btn-primary btn-block">Create</button></div>
 					<div><ng-include src="'message.html'"></ng-include></div>
 				</form>
 			</div>

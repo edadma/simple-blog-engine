@@ -113,6 +113,7 @@ class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
 	def footer = column[String]("footer")
 	
 	def * = (domain, head, title, subtitle, description, footer, id.?) <> (Blog.apply _ tupled, Blog.unapply)
+	def idx_blogs_domain = index("idx_blogs_domain", domain)
 }
 
 object Blogs extends TableQuery(new BlogsTable(_)) {
