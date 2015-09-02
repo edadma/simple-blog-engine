@@ -39,7 +39,7 @@ object Views {
 			</body>
 		</html>
 	
-	def create = {
+	def create( domain: String ) = {
 		main( "Blog Creation" ) {
 			<xml:group>
 				<link href="/css/create.css" rel="stylesheet"/>
@@ -49,10 +49,10 @@ object Views {
 			</xml:group>
 		} {
 			<div class="container" ng-app="create" ng-controller="CreateController">
-				<form class="form-create" ng-submit="submit()">
+				<form class="form-create" ng-submit={s"submit('$domain')"}>
 					<h2 class="form-create-heading">Blog Creation</h2>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="blog.subdomain" ng-model-options="{debounce: 500}" ng-change="check()" 
+						<input type="text" class="form-control" ng-model="blog.domain" ng-model-options="{debounce: 500}" ng-change={s"check('$domain')"}
 							placeholder="Subdomain" required="" autofocus=""/>
 							<p class="text-danger" ng-show="subdomain == 'exists'">This subdomain already exists.</p>
 							<p class="text-success" ng-show="subdomain == 'available'">This subdomain is available.</p>
@@ -60,15 +60,15 @@ object Views {
 					<div class="form-group">
 						<input type="text" class="form-control" ng-model="blog.title" placeholder="Title" required="" autofocus=""/></div>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="blog.subtitle" placeholder="Subtitle" required=""/></div>
+						<input type="text" class="form-control" ng-model="blog.subtitle" placeholder="Subtitle"/></div>
 					<div class="form-group">
 						<input type="text" class="form-control" ng-model="blog.categories" placeholder="Categories (comma separated list)" required=""/></div>
 					<div class="form-group">
-						<textarea class="form-control" rows="3" ng-model="blog.description" placeholder="Description" required=""></textarea></div>
+						<textarea class="form-control" rows="3" ng-model="blog.description" placeholder="Description"></textarea></div>
+					<!-- <div class="form-group">
+						<textarea class="form-control" rows="2" ng-model="blog.head" placeholder="Head code (Optional)"></textarea></div> -->
 					<div class="form-group">
-						<textarea class="form-control" rows="2" ng-model="blog.description" placeholder="Head code (Optional)"></textarea></div>
-					<div class="form-group">
-						<textarea class="form-control" rows="2" ng-model="blog.description" placeholder="Footer code (Optional)"></textarea></div>
+						<textarea class="form-control" rows="2" ng-model="blog.footer" placeholder="Footer code (Optional)"></textarea></div>
 					<div class="form-group">
 						<button type="submit" class="btn btn-lg btn-primary btn-block">Create</button></div>
 					<div><ng-include src="'message.html'"></ng-include></div>

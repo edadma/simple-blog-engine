@@ -71,10 +71,11 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//
 		// application routes
 		//
+		//hostName {h => complete(h)} ~
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
 		(get & pathSingleSlash & validate( sys != None, "blog.sys not set" ) & host( sys.getOrElse("") )) {
-			complete( Application.sys ) } ~
+			complete( Application.sys(sys.get) ) } ~
 		// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
 		// 			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {
@@ -119,8 +120,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				b => complete( b ) } ~
 			(get & path("blogs"/Segment)) {
 				d => complete( API.blogsGet(d) ) } ~
-			(post & path("blogs") & entity(as[dao.Blog])) {
-				b => complete( b ) } ~
+			(post & path("blogs") & entity(as[BlogJson])) {
+				b => complete( API.blogsPost(b) ) } ~
 			(get & path("category"/IntNumber)) {
 				categoryid => complete( API.category(categoryid) ) } ~
 			(get & path("categories") & blog) {

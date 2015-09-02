@@ -11,6 +11,6 @@
 			}
 		roles += {blogid: 1, userid: 1, role: "admin"}
 		roles += {blogid: 1, userid: 2, role: "user"}
-		categories += {blogid: 1, name: "Blog", description: "Articles"}
+		categories += {blogid: 1, name: "Blog"}
 
   }

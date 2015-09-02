@@ -19,6 +19,16 @@ object API extends SessionDirectives {
 	
 	def blogsGet( domain: String ) = dao.Blogs.find( domain )
 	
+	def blogsPost( blog: models.BlogJson ) = {
+		dao.Blogs.create( blog.domain, "", blog.title, blog.subtitle, blog.description, blog.footer ) map 
+			{ id =>
+				for (c <- blog.categories split "," map (_.trim) filter (_ != "") distinct)
+					dao.Categories.create( id, c )
+					
+				Map( "id" -> id )
+			}
+	}
+	
 	def links( blog: dao.Blog ) = Queries.findAllLinks( blog.id.get )
 	
 	def categories( blog: dao.Blog ) = dao.Categories.findByBlogid( blog.id.get )

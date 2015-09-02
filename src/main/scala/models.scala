@@ -56,6 +56,19 @@ object UserJson {
 	implicit val userJson = jsonFormat5( UserJson.apply )
 }
 
+case class BlogJson(
+	domain: String,
+	title: String,
+	categories: String,
+	subtitle: String,
+	description: String,
+	footer: String
+)
+
+object BlogJson {
+	implicit val blogJson = jsonFormat6(BlogJson.apply)
+}
+
 case class PostJson(
 	id: Option[Int],
 	title: String,

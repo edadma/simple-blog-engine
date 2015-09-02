@@ -187,12 +187,11 @@ object Posts extends TableQuery(new PostsTable(_)) {
 case class Category(
 	blogid: Int,
 	name: String,
-	description: String,
 	id: Option[Int] = None
 )
 
 object Category {
-	implicit val blog = jsonFormat4(Category.apply)
+	implicit val blog = jsonFormat3(Category.apply)
 }
 
 class CategoriesTable(tag: Tag) extends Table[Category](tag, "categories") {
@@ -201,7 +200,7 @@ class CategoriesTable(tag: Tag) extends Table[Category](tag, "categories") {
 	def name = column[String]("name")
 	def description = column[String]("description")
 	
-	def * = (blogid, name, description, id.?) <> (Category.apply _ tupled, Category.unapply)
+	def * = (blogid, name, id.?) <> (Category.apply _ tupled, Category.unapply)
 	def idx_categories_blogid = index("idx_categories_blogid", blogid)
 	def idx_categories_name = index("idx_categories_name", name)
 	def idx_categories_blogid_name = index("idx_categories_blogid_name", (blogid, name), unique = true)
@@ -214,9 +213,8 @@ object Categories extends TableQuery(new CategoriesTable(_)) {
 
 	def create(
 			blogid: Int,
-			name: String,
-			description: String
-		) = 	db.run( this returning map(_.id) += Category(blogid, name, description) )
+			name: String
+		) = 	db.run( this returning map(_.id) += Category(blogid, name) )
 
 	def delete(blogid: Int, name: String): Future[Int] = {
 		db.run(filter(r => r.blogid === blogid && r.name === name).delete)

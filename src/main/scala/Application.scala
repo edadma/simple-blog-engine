@@ -26,7 +26,7 @@ object Application extends SessionDirectives {
 			)
 	}
 	
-	def sys = Views.create
+	def sys( domain: String ) = Views.create( domain )
 	
 	def index( blog: dao.Blog, user: Option[models.User] ) = blogView( blog, user, Queries.findPostsBefore(blog.id.get, Instant.now, 10) )
 	

@@ -43,7 +43,7 @@ object Startup {
 			Roles.create( r("blogid").toInt, r("userid").toInt, r("role") )
 		
 		for (oc <- conf.opt[List[Map[String, String]]]("blog.init.categories"); c <- oc)
-			Categories.create( c("blogid").toInt, c("name"), c("description") )
+			Categories.create( c("blogid").toInt, c("name") )
 	}
 	
 }

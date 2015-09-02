@@ -6,22 +6,20 @@ app.controller( 'CreateController', ['$scope', '$resource', ($scope, $resource) 
 	
 	$scope.message = {type: 'none'}
 	
-	$scope.check = ->
-		console.log 'check'
-		if ($scope.blog.subdomain)
-			Blogs.get {id: $scope.blog.subdomain}, (result, response) ->
+	$scope.check = (domain) ->
+		if ($scope.blog.domain)
+			Blogs.get {id: $scope.blog.domain + "." + domain}, (result, response) ->
 				$scope.subdomain = 'exists'
 			, (response) ->
 				$scope.subdomain = 'available'
 		else
 			$scope.subdomain = ''
 			
-	$scope.submit = (role) ->
-		Users.save $scope.user, (result, response) ->
-			if role == {}
-				$scope.message = {type: 'success', text: "User created"}
-			else
-				$scope.message = {type: 'success', text: "User created: " + role.role + " for '" + role.title + "'"}
+	$scope.submit = (domain) ->
+		blog = angular.copy( $scope.blog )
+		blog.domain = blog.domain + "." + domain
+		Blogs.save blog, (result, response) ->
+			$scope.message = {type: 'success', text: "Blog created"}
 		, (response) ->
 			$scope.message = {type: 'error', text: response.data}
 	] )
