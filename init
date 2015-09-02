@@ -1,8 +1,9 @@
   init {
-    
+
 		users += {name: "someone", email: "someone@example.com", password: "some.pass", url: "http://example.com"}
 		users += {name: "asdf", email: "asdf@example.com", password: "asdf", url: "http://asdf.com"}
 		blogs += {ownerid: 1, domain: "abc.localhost",
+			head: "",
 			title: "Some Blog",
 			subtitle: """just a blog""",
 			description: "This is a blog about many things",
@@ -11,5 +12,5 @@
 		roles += {blogid: 1, userid: 1, role: "admin"}
 		roles += {blogid: 1, userid: 2, role: "user"}
 		categories += {blogid: 1, name: "Blog", description: "Articles"}
-    
+
   }

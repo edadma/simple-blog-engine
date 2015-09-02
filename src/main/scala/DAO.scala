@@ -92,6 +92,7 @@ object Roles extends TableQuery(new RolesTable(_)) {
 case class Blog(
 	ownerid: Int,
 	domain: String,
+	head: String,
 	title: String,
 	subtitle: String,
 	description: String,
@@ -100,19 +101,20 @@ case class Blog(
 )
 
 object Blog {
-	implicit val blog = jsonFormat7(Blog.apply)
+	implicit val blog = jsonFormat8(Blog.apply)
 }
 
 class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
 	def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 	def ownerid = column[Int]("ownerid")
 	def domain = column[String]("domain")
+	def head = column[String]("head")
 	def title = column[String]("title")
 	def subtitle = column[String]("subtitle")
 	def description = column[String]("description")
 	def footer = column[String]("footer")
 	
-	def * = (ownerid, domain, title, subtitle, description, footer, id.?) <> (Blog.apply _ tupled, Blog.unapply)
+	def * = (ownerid, domain, head, title, subtitle, description, footer, id.?) <> (Blog.apply _ tupled, Blog.unapply)
 }
 
 object Blogs extends TableQuery(new BlogsTable(_)) {
@@ -123,11 +125,12 @@ object Blogs extends TableQuery(new BlogsTable(_)) {
 	def create(
 			ownerid: Int,
 			domain: String,
+			head: String,
 			title: String,
 			subtitle: String,
 			description: String,
 			footer: String ) = {
-		db.run( this returning map(_.id) += Blog(ownerid, domain, title, subtitle, description, footer) )
+		db.run( this returning map(_.id) += Blog(ownerid, domain, head, title, subtitle, description, footer) )
 	}
 
 	def delete(id: Int): Future[Int] = {

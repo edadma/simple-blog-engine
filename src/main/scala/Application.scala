@@ -26,11 +26,7 @@ object Application extends SessionDirectives {
 			)
 	}
 	
-	def sys = {
-		
-		Views.sys
-		
-	}
+	def sys = Views.create
 	
 	def index( blog: dao.Blog, user: Option[models.User] ) = blogView( blog, user, Queries.findPostsBefore(blog.id.get, Instant.now, 10) )
 	
@@ -49,7 +45,7 @@ object Application extends SessionDirectives {
 	
 	def admin( blog: dao.Blog, user: models.User ) = Views.admin( blog, user )
 	
-	def register = Views.register
+	def register = Views.register( None )
 	
 // 	def post( blog: dao.Blog, user: models.User, category: Int, headline: String, text: String ) = {
 // 		dao.Posts.create( blog.id.get, user.id, headline, text, Instant.now ) map (dao.Categorizations.create( _, category ))

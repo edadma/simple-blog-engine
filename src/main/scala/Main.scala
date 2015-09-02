@@ -136,11 +136,13 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 			(get & path("recent"/IntNumber) & blog) {
 				(count, b) => complete( API.recent(b, count) ) } ~
 			(get & path("users"/IntNumber)) {
-				userid => complete( API.users(userid) ) } ~
-			(get & path("users"/Segment)) {
-				email => complete( API.users(email) ) } ~
-			(get & path("users")) {
-				complete( API.users ) } ~
+				userid => complete( API.usersGet(userid) ) } ~
+			(post & path("users") & entity(as[UserJson])) {
+				u => complete( API.usersPost(u) ) } ~
+// 			(get & path("users"/Segment)) {
+// 				email => complete( API.users(email) ) } ~
+// 			(get & path("users")) {
+// 				complete( API.users ) } ~
 			(path("comments"/IntNumber)) { postid => 
 				(get & complete( API.comments(postid) )) ~
 				(post & formFields('authorid.as[Int]?, 'name?, 'email?, 'url, 'replytoid.as[Int]?, 'text)) {

@@ -24,7 +24,7 @@ object Implicits {
 import Implicits._
 
 case class User(
-	id: Option[Int],
+	id: Int,
 	name: String,
 	email: String,
 	roles: Seq[dao.Role],
@@ -40,23 +40,21 @@ case class User(
 object User {
 	implicit val user = jsonFormat9( User.apply )
 	
-	def from( u: dao.User ) = User( u.id, u.name, u.email, await(dao.Roles.find(u.id.get)), u.avatar map (_ => s"/api/v1/users/${u.id.get}/avatar"),
+	def from( u: dao.User ) = User( u.id.get, u.name, u.email, await(dao.Roles.find(u.id.get)), u.avatar map (_ => s"/api/v1/users/${u.id.get}/avatar"),
 																	u.thumb map (_ => s"/api/v1/users/${u.id.get}/thumb"), u.bio, u.url, u.registered )
 }
 
-// case class Blog(
-// 	id: Int,
-// 	owner: String,
-// 	domain: String,
-// 	title: String,
-// 	subtitle: String,
-// 	description: String,
-// 	footer: String
-// )
-// 
-// object Blog {
-// 	implicit val blog = jsonFormat7(Blog.apply)
-// }
+case class UserJson(
+	name: String,
+	email: String,
+	password: String,
+	bio: Option[String],
+	url: Option[String]
+)
+
+object UserJson {
+	implicit val userJson = jsonFormat5( UserJson.apply )
+}
 
 case class PostJson(
 	id: Option[Int],

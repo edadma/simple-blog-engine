@@ -1,6 +1,6 @@
 package xyz.hyperreal.blog
 
-import spray.http.{StatusCodes, HttpResponse, HttpHeaders}
+import spray.http.{StatusCodes, HttpResponse, HttpHeaders, HttpEntity}
 import spray.routing.directives.RouteDirectives._
 
 import org.joda.time.Instant
@@ -26,7 +26,7 @@ object API extends SessionDirectives {
 	def postsGet( postid: Int ) = dao.Posts.find( postid ) map (u => u map (models.Post.from(_)))
 	
 	def postsPost( blog: dao.Blog, user: models.User, post: models.PostJson ) =
-		dao.Posts.create( blog.id.get, user.id.get, post.title, post.content, Instant.now, post.status ) map { postid =>
+		dao.Posts.create( blog.id.get, user.id, post.title, post.content, Instant.now, post.status ) map { postid =>
 			post.categories foreach (dao.Categorizations.create( postid, _ ))
 			Map( "postid" -> postid )
 		}
@@ -48,11 +48,18 @@ object API extends SessionDirectives {
 	
 	def recent( blog: dao.Blog, limit: Int ) = Queries.findPostsBefore( blog.id.get, Instant.now, limit )
 	
-	def users( userid: Int ) = dao.Users.find(userid) map (u => u map (models.User.from(_)))
+	def usersGet( userid: Int ) = dao.Users.find(userid) map (u => u map (models.User.from(_)))
 	
-	def users( email: String ) = dao.Users.find(URLDecoder.decode(email, "UTF-8")) map (u => u map (models.User.from(_)))
+	def usersPost( u: models.UserJson ) = {
+		dao.Users.find( u.email ) flatMap {
+			case None => dao.Users.create( u.name, u.email, u.password, None, u.bio, u.url ) map (id => HttpResponse( status = StatusCodes.Created, s"""{"id": $id}""" ))
+			case _ => Future( HttpResponse(status = StatusCodes.Conflict, "A user with that email address already exists.") )
+		}
+	}
 	
-	def users = dao.Users.list map (u => u map (models.User.from(_)))
+	//def users( email: String ) = dao.Users.find(URLDecoder.decode(email, "UTF-8")) map (u => u map (models.User.from(_)))
+	
+	//def users = dao.Users.list map (u => u map (models.User.from(_)))
 	
 	def comments( postid: Int ) = Queries.findComments( postid )
 	

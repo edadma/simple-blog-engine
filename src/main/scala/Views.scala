@@ -39,25 +39,45 @@ object Views {
 			</body>
 		</html>
 	
-	def sys = {
-		
-		main( "Create Blog" ) {
-			<link href="/css/signin.css" rel="stylesheet"/>
+	def create = {
+		main( "Blog Creation" ) {
+			<xml:group>
+				<link href="/css/create.css" rel="stylesheet"/>
+				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
+				<script src="/coffee/create.js"></script>
+			</xml:group>
 		} {
-			<div class="container">
-				<div class="row">
-					<div class="col-md-2 col-md-offset-4">
-						<a class="btn btn-lg btn-primary btn-block" href="/register">Register</a>
-					</div>
-					<div class="col-md-2">
-						<a class="btn btn-lg btn-primary btn-block" href="/create">Create Blog</a>
-					</div>
-				</div>
+			<div class="container" ng-app="create" ng-controller="CreateController">
+				<form class="form-create" ng-submit="submit()">
+					<h2 class="form-create-heading">Blog Creation</h2>
+					<div class="form-group">
+						<input type="text" class="form-control" ng-model="blog.title" placeholder="Title" required="" autofocus=""/></div>
+					<div class="form-group">
+						<input type="text" class="form-control" ng-model="blog.title" placeholder="Subtitle" required=""/></div>
+					<div class="form-group">
+						<textarea class="form-control" rows="4" cols="50" ng-model="blog.description" placeholder="Description" required=""></textarea></div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button></div>
+					<div><ng-include src="'message.html'"></ng-include></div>
+				</form>
 			</div>
 		}
-		
 	}
 	
+// 			<link href="/css/signin.css" rel="stylesheet"/>
+// 		} {
+// 			<div class="container">
+// 				<div class="row">
+// 					<div class="col-md-2 col-md-offset-4">
+// 						<a class="btn btn-lg btn-primary btn-block" href="/register">Register</a>
+// 					</div>
+// 					<div class="col-md-2">
+// 						<a class="btn btn-lg btn-primary btn-block" href="/create">Create Blog</a>
+// 					</div>
+// 				</div>
+// 			</div>
+
 	def login( blog: dao.Blog ) = {
 		main( "Login: " + blog.title ) {
 			<link href="/css/signin.css" rel="stylesheet"/>
@@ -82,28 +102,31 @@ object Views {
 		}
 	}
 	
-	def register =
+	def register( role: Option[(Int, String, String)] ) =
 		main( "Registration" ) {
 			<xml:group>
 				<link href="/css/register.css" rel="stylesheet"/>
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
+				<script src="/webjars/angularjs/1.4.3/angular-resource.min.js"></script>
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
-			<div class="container" ng-app="register">
-				<form class="form-register" ng-submit="submit()" ng-controller="registerFormController">
-					<h2 class="form-register-heading">Please register</h2>
+			<div class="container" ng-app="register" ng-controller="RegisterController">
+				<form class="form-register" ng-submit={if (role == None) "submit({})" else s"submit({blogid: ${role.get._1}, title: ${role.get._2}, role: ${role.get._3}})"}>
+					<h2 class="form-register-heading">Registration</h2>
 					<div class="form-group">
-						<input type="email" class="form-control" ng-model="email" placeholder="Email address*" required="true" autofocus="true"/></div>
+						<input type="text" class="form-control" ng-model="user.name" placeholder="Name*" required="" autofocus=""/></div>
 					<div class="form-group">
-						<input type="password" class="form-control" ng-model="password" placeholder="Password*" required="true"/></div>
+						<input type="email" class="form-control" ng-model="user.email" placeholder="Email address*" required=""/></div>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="name" placeholder="Name*" required="true"/></div>
+						<input type="password" class="form-control" ng-model="user.password" placeholder="Password*" required=""/></div>
 					<div class="form-group">
-						<input type="url" class="form-control" ng-model="url" placeholder="URL"/></div>
+						<input type="url" class="form-control" ng-model="user.url" placeholder="URL"/></div>
 					<div class="form-group">
-						<textarea class="form-control" rows="4" cols="50" ng-model="bio" placeholder="Bio"></textarea></div>
-					<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+						<textarea class="form-control" rows="4" cols="50" ng-model="user.bio" placeholder="Bio"></textarea></div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button></div>
+					<div><ng-include src="'message.html'"></ng-include></div>
 				</form>
 			</div>
 		}
@@ -283,16 +306,7 @@ object Views {
 				
 				<script src="/webjars/angularjs/1.4.3/angular.min.js"></script>
 				<script src="/coffee/blog.js"></script>
-				<script>{"""
-					(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-					})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-					ga('create', 'UA-66924928-1', 'auto');
-					ga('send', 'pageview');
-				"""}
-				</script>
+				{xml.Unparsed(b.head)}
 			</xml:group>
 		} {
 			<xml:group>
@@ -312,6 +326,7 @@ object Views {
 									</xml:group>
 								else
 									<a class="blog-nav-item navbar-right" href="/login">Sign in</a>
+									<a class="blog-nav-item navbar-right" href="/register">Register</a>
 							}
 						</nav>
 					</div>
