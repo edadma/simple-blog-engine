@@ -64,7 +64,7 @@ case class Role(
 )
 
 object Role {
-	implicit val blog = jsonFormat3(Role.apply)
+	implicit val role = jsonFormat3(Role.apply)
 }
 
 class RolesTable(tag: Tag) extends Table[Role](tag, "roles") {
@@ -74,11 +74,15 @@ class RolesTable(tag: Tag) extends Table[Role](tag, "roles") {
 	
 	def * = (blogid, userid, role) <> (Role.apply _ tupled, Role.unapply)
 	def pk = primaryKey("pk_roles", (blogid, userid))
+	def idx_roles_blogid = index("idx_roles_blogid", blogid)
 	def idx_roles_userid = index("idx_roles_userid", userid)
+	def idx_roles_role = index("idx_roles_role", role)
 }
 
 object Roles extends TableQuery(new RolesTable(_)) {
 	def find(userid: Int): Future[Seq[Role]] = db.run( filter(_.userid === userid) result )
+
+	def find(blogid: Int, role: String): Future[Seq[Role]] = db.run( filter(r => r.blogid === blogid && r.role === role) result )
 
 	def create( blogid: Int, userid: Int, role: String ) = db.run( this += Role(blogid, userid, role) )
 

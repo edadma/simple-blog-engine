@@ -55,6 +55,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				}
 		}
 	
+		val sysValidate = validate( sys != None, "blog.sys not set" ) & host( sys.getOrElse("") )
+		
 		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
 		//
@@ -74,8 +76,10 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//hostName {h => complete(h)} ~
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
-		(get & pathSingleSlash & validate( sys != None, "blog.sys not set" ) & host( sys.getOrElse("") )) {
+		(get & pathSingleSlash & sysValidate) {
 			complete( Application.sys(sys.get) ) } ~
+		(get & path( "setup-admin"/IntNumber ) & sysValidate) {
+			blogid => complete( Application.setup(blogid) ) } ~
 		// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
 		// 			(id, h, session) => complete(Application.index( h, session )) } ~
 		// 		(get & path( "category"/IntNumber ) & hostName) {
@@ -100,8 +104,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 					complete( Application.login(b) ) } ~
 			(post & formFields( 'email, 'password, 'rememberme ? "no" )) {
 				(email, password, rememberme) => Application.authenticate( email, password ) } } ~
-		(get & path( "register" )) {
-			complete( Application.register ) } ~
+		(get & path( "register" ) & blog) {
+			_ => complete( Application.register ) } ~
 		(get & path( "admin" ) & admin) {
 			(b, u) => complete( Application.admin(b, u) ) } ~
 // 		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {

@@ -19,7 +19,8 @@ app.controller( 'CreateController', ['$scope', '$resource', ($scope, $resource) 
 		blog = angular.copy( $scope.blog )
 		blog.domain = blog.domain + "." + domain
 		Blogs.save blog, (result, response) ->
-			$scope.message = {type: 'success', text: "Blog created"}
+			$scope.blogid = result.id
+			$scope.message = {type: 'success', text: "Blog created - now click 'Setup Administrator'"}
 		, (response) ->
 			$scope.message = {type: 'error', text: response.data}
 	] )

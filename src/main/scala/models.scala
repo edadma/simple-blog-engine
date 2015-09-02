@@ -44,16 +44,26 @@ object User {
 																	u.thumb map (_ => s"/api/v1/users/${u.id.get}/thumb"), u.bio, u.url, u.registered )
 }
 
+case class UserRole(
+	blogid: Int,
+	role: String
+)
+
+object UserRole {
+	implicit val userRole = jsonFormat2(UserRole.apply)
+}
+
 case class UserJson(
 	name: String,
 	email: String,
 	password: String,
 	bio: Option[String],
-	url: Option[String]
+	url: Option[String],
+	role: Option[UserRole]
 )
 
 object UserJson {
-	implicit val userJson = jsonFormat5( UserJson.apply )
+	implicit val userJson = jsonFormat6( UserJson.apply )
 }
 
 case class BlogJson(

@@ -28,6 +28,17 @@ object Application extends SessionDirectives {
 	
 	def sys( domain: String ) = Views.create( domain )
 	
+	def setup( blogid: Int ) =
+		await( dao.Blogs.find(blogid) ) match {
+			case Some( blog ) => await( dao.Roles.find(blogid, "admin") ) match {
+				case Nil => Some {
+					Views.register( Some((blogid, "admin", blog.title)) )
+				}
+				case _ => None
+			}
+			case _ => None
+		}
+	
 	def index( blog: dao.Blog, user: Option[models.User] ) = blogView( blog, user, Queries.findPostsBefore(blog.id.get, Instant.now, 10) )
 	
 	def post( postid: Int, blog: dao.Blog, user: Option[models.User]) = blogView( blog, user, Queries.findPost(postid) )

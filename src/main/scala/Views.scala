@@ -70,7 +70,9 @@ object Views {
 					<div class="form-group">
 						<textarea class="form-control" rows="2" ng-model="blog.footer" placeholder="Footer code (Optional)"></textarea></div>
 					<div class="form-group">
-						<button type="submit" class="btn btn-lg btn-primary btn-block">Create</button></div>
+						<button ng-hide="blogid" type="submit" class="btn btn-lg btn-primary btn-block">Create</button>
+						<a ng-show="blogid" class="btn btn-lg btn-success btn-block" ng-href="/setup-admin/{{blogid}}">Setup Administrator</a>
+						</div>
 					<div><ng-include src="'message.html'"></ng-include></div>
 				</form>
 			</div>
@@ -124,7 +126,7 @@ object Views {
 			</xml:group>
 		} {
 			<div class="container" ng-app="register" ng-controller="RegisterController">
-				<form class="form-register" ng-submit={if (role == None) "submit({})" else s"submit({blogid: ${role.get._1}, title: ${role.get._2}, role: ${role.get._3}})"}>
+				<form class="form-register" ng-submit={if (role == None) "submit()" else s"submit({blogid: ${role.get._1}, role: '${role.get._2}'}, '${role.get._3}')"}>
 					<h2 class="form-register-heading">Registration</h2>
 					<div class="form-group">
 						<input type="text" class="form-control" ng-model="user.name" placeholder="Name*" required="" autofocus=""/></div>
@@ -138,7 +140,7 @@ object Views {
 						<textarea class="form-control" rows="4" cols="50" ng-model="user.bio" placeholder="Bio"></textarea></div>
 					<div class="form-group">
 						<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button></div>
-					<div><ng-include src="'message.html'"></ng-include></div>
+					<div><ng-include src="'/message.html'"></ng-include></div>
 				</form>
 			</div>
 		}

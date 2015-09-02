@@ -6,12 +6,12 @@ app.controller( 'RegisterController', ['$scope', '$resource', ($scope, $resource
 
 	$scope.message = {type: 'none'}
 	
-	$scope.submit = (role) ->
+	$scope.submit = (role, title) ->
 		Users.save $scope.user, (result, response) ->
-			if role == {}
-				$scope.message = {type: 'success', text: "User created"}
+			if angular.isDefined( role )
+				$scope.message = {type: 'success', text: "User created: " + role.role + " for '" + title + "'"}
 			else
-				$scope.message = {type: 'success', text: "User created: " + role.role + " for '" + role.title + "'"}
+				$scope.message = {type: 'success', text: "User created"}
 		, (response) ->
 			$scope.message = {type: 'error', text: response.data}
 	] )
