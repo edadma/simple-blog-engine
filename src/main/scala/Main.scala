@@ -115,7 +115,9 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// API routes
 		//
 		pathPrefix( "api"/"v1" ) {
-			(get & path("blog") & blog) {
+			(get & path("blogs") & blog) {
+				b => complete( b ) } ~
+			(post & path("blogs") & entity(as[dao.Blog])) {
 				b => complete( b ) } ~
 			(get & path("category"/IntNumber)) {
 				categoryid => complete( API.category(categoryid) ) } ~
