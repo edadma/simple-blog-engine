@@ -3,15 +3,15 @@ app = angular.module 'create', ['ngResource']
 app.controller( 'CreateController', ['$scope', '$resource', ($scope, $resource) ->
 	
 	Blogs = $resource '/api/v1/blogs/:id'
+	Domains = $resource '/api/v1/domains/:id'
 	
 	$scope.message = {type: 'none'}
 	
 	$scope.check = (domain) ->
 		if ($scope.blog.domain)
-			Blogs.get {id: $scope.blog.domain + "." + domain}, (result, response) ->
-				$scope.subdomain = 'exists'
-			, (response) ->
-				$scope.subdomain = 'available'
+			Domains.get {id: $scope.blog.domain + "." + domain}, (result, response) ->
+				$scope.subdomain = if result.available then 'available' else 'exists'
+				console.log $scope.subdomain
 		else
 			$scope.subdomain = ''
 			

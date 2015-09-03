@@ -27,12 +27,12 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 	Startup
 
   val conf = ConfigFactory.load
-	val sys = conf.opt[String]( "blog.sys" )
+	val system = conf.opt[String]( "blog.domain.system" )
 	
-	implicit val system = ActorSystem("on-spray-can")
-	implicit val context = system.dispatcher
+	implicit val akka = ActorSystem( "on-spray-can" )
+	implicit val context = akka.dispatcher
 
-  startServer( conf.get[String]("blog.interface"), conf.get[Int]("blog.port") ) {
+  startServer( conf.get[String]("blog.server.interface"), conf.get[Int]("blog.server.port") ) {
 	
 		def blog: Directive[dao.Blog :: HNil] = hostName hflatMap {
 			case h :: HNil =>
@@ -55,7 +55,7 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 				}
 		}
 	
-		val sysValidate = validate( sys != None, "blog.sys not set" ) & host( sys.getOrElse("") )
+		val systemValidate = validate( system != None, "blog.domain.system not set" ) & host( system.getOrElse("") )
 		
 		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
@@ -76,9 +76,9 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		//hostName {h => complete(h)} ~
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
-		(get & pathSingleSlash & sysValidate) {
-			complete( Application.sys(sys.get) ) } ~
-		(get & path( "setup-admin"/IntNumber ) & sysValidate) {
+		(get & pathSingleSlash & systemValidate) {
+			complete( Application.system ) } ~
+		(get & path( "setup-admin"/IntNumber ) & systemValidate) {
 			blogid => complete( Application.setup(blogid) ) } ~
 		// 		(get & path( "author"/IntNumber ) & hostName & optionalSession) {
 		// 			(id, h, session) => complete(Application.index( h, session )) } ~
@@ -120,6 +120,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// API routes
 		//
 		pathPrefix( "api"/"v1" ) {
+			(get & path("domains"/Segment)) {
+				d => complete( API.domainsGet(d) ) } ~
 			(get & path("blogs") & blog) {
 				b => complete( b ) } ~
 			(get & path("blogs"/Segment)) {

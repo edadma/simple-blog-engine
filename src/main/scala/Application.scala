@@ -26,13 +26,13 @@ object Application extends SessionDirectives {
 			)
 	}
 	
-	def sys( domain: String ) = Views.create( domain )
+	def system = Views.create
 	
 	def setup( blogid: Int ) =
 		await( dao.Blogs.find(blogid) ) match {
 			case Some( blog ) => await( dao.Roles.find(blogid, "admin") ) match {
 				case Nil => Some {
-					Views.register( Some((blogid, "admin", blog.title)) )
+					Views.register( Some((blogid, "admin", blog.title, blog.domain)) )
 				}
 				case _ => None
 			}

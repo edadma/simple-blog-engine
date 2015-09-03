@@ -1,5 +1,8 @@
 package xyz.hyperreal.blog
 
+import com.typesafe.config.ConfigFactory
+import com.github.kxbmap.configs._
+
 import spray.http.{StatusCodes, HttpResponse, HttpHeaders, HttpEntity}
 import spray.routing.directives.RouteDirectives._
 
@@ -17,6 +20,15 @@ import java.net.URLDecoder
 
 object API extends SessionDirectives {
 	
+  val conf = ConfigFactory.load
+	val reserved = conf.opt[List[String]]( "blog.domain.reserved" )
+
+	def domainsGet( domain: String ) =
+		if (reserved.get exists (_ == domain))
+			Future( Map("available" -> false) )
+		else
+			dao.Blogs.find( domain ) map (u => Map( "available" -> (u == None) ))
+		
 	def blogsGet( domain: String ) = dao.Blogs.find( domain )
 	
 	def blogsPost( blog: models.BlogJson ) = {

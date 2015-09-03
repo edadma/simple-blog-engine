@@ -1,5 +1,8 @@
 package xyz.hyperreal.blog
 
+import com.typesafe.config.ConfigFactory
+import com.github.kxbmap.configs._
+
 import in.azeemarshad.common.sessionutils.Session
 
 import org.joda.time.{DateTime, Instant}
@@ -14,6 +17,9 @@ object Views {
 	val archivesTextDateFormat = DateTimeFormat.forPattern( "MMMM yyyy" )
 	val archivesLinkDateFormat = DateTimeFormat.forPattern( "yyyy-MM" )
 	
+  val conf = ConfigFactory.load
+	val base = conf.opt[String]( "blog.domain.base" ) getOrElse null
+
 	def main( title: String )( head: xml.Node = xml.Group(Nil) )( content: xml.Node ) =
 		<html lang="en">
 			<head>
@@ -39,7 +45,7 @@ object Views {
 			</body>
 		</html>
 	
-	def create( domain: String ) = {
+	def create = {
 		main( "Blog Creation" ) {
 			<xml:group>
 				<link href="/css/create.css" rel="stylesheet"/>
@@ -49,12 +55,12 @@ object Views {
 			</xml:group>
 		} {
 			<div class="container" ng-app="create" ng-controller="CreateController">
-				<form class="form-create" ng-submit={s"submit('$domain')"}>
+				<form class="form-create" ng-submit={s"submit('$base')"}>
 					<h2 class="form-create-heading">Blog Creation</h2>
 					<div class="form-group">
-						<input type="text" class="form-control" ng-model="blog.domain" ng-model-options="{debounce: 500}" ng-change={s"check('$domain')"}
+						<input type="text" class="form-control" ng-model="blog.domain" ng-model-options="{debounce: 500}" ng-change={s"check('$base')"}
 							placeholder="Subdomain" required="" autofocus=""/>
-							<p class="text-danger" ng-show="subdomain == 'exists'">This subdomain already exists.</p>
+							<p class="text-danger" ng-show="subdomain == 'exists'">This subdomain is not available. Try another one.</p>
 							<p class="text-success" ng-show="subdomain == 'available'">This subdomain is available.</p>
 						</div>
 					<div class="form-group">
@@ -78,19 +84,6 @@ object Views {
 			</div>
 		}
 	}
-	
-// 			<link href="/css/signin.css" rel="stylesheet"/>
-// 		} {
-// 			<div class="container">
-// 				<div class="row">
-// 					<div class="col-md-2 col-md-offset-4">
-// 						<a class="btn btn-lg btn-primary btn-block" href="/register">Register</a>
-// 					</div>
-// 					<div class="col-md-2">
-// 						<a class="btn btn-lg btn-primary btn-block" href="/create">Create Blog</a>
-// 					</div>
-// 				</div>
-// 			</div>
 
 	def login( blog: dao.Blog ) = {
 		main( "Login: " + blog.title ) {
@@ -116,7 +109,7 @@ object Views {
 		}
 	}
 	
-	def register( role: Option[(Int, String, String)] ) =
+	def register( role: Option[(Int, String, String, String)] ) =
 		main( "Registration" ) {
 			<xml:group>
 				<link href="/css/register.css" rel="stylesheet"/>
@@ -138,8 +131,14 @@ object Views {
 						<input type="url" class="form-control" ng-model="user.url" placeholder="URL"/></div>
 					<div class="form-group">
 						<textarea class="form-control" rows="4" cols="50" ng-model="user.bio" placeholder="Bio"></textarea></div>
-					<div class="form-group">
-						<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button></div>
+					<div class="form-group"> {
+						if (role == None)
+							<button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+						else {
+							<button ng-hide="message.type == 'success'" type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+							<a ng-show="message.type == 'success'" class="btn btn-lg btn-success btn-block" ng-href={s"http://{{'${role.get._4}'}}"}>Check it out!</a>
+						}
+					}</div>
 					<div><ng-include src="'/message.html'"></ng-include></div>
 				</form>
 			</div>
