@@ -7,6 +7,9 @@ app.controller( 'RegisterController', ['$scope', '$resource', ($scope, $resource
 	$scope.message = {type: 'none'}
 	
 	$scope.submit = (role, title) ->
+		if angular.isDefined( role )
+			$scope.user.role = role
+			
 		Users.save $scope.user, (result, response) ->
 			if angular.isDefined( role )
 				$scope.message = {type: 'success', text: "User created: " + role.role + " for '" + title + "'"}

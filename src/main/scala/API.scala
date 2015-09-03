@@ -64,7 +64,17 @@ object API extends SessionDirectives {
 	
 	def usersPost( u: models.UserJson ) = {
 		dao.Users.find( u.email ) flatMap {
-			case None => dao.Users.create( u.name, u.email, u.password, None, u.bio, u.url ) map (id => HttpResponse( status = StatusCodes.Created, s"""{"id": $id}""" ))
+			case None =>
+				dao.Users.create( u.name, u.email, u.password, None, u.bio, u.url ) flatMap {
+					id =>
+						val response = HttpResponse( status = StatusCodes.Created, s"""{"id": $id}""" )
+						
+						u.role match {
+							case Some( r ) =>
+								dao.Roles.create( r.blogid, id, r.role ) map (_ => response)
+							case None => Future( response )
+						}
+				}
 			case _ => Future( HttpResponse(status = StatusCodes.Conflict, "A user with that email address already exists.") )
 		}
 	}
