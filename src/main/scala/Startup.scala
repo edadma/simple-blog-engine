@@ -28,22 +28,22 @@ object Startup {
 				Links.schema
 			).create
 		)))
-	}
 	
-	val conf = ConfigFactory.load
-	
-	if (conf hasPath "blog.init") {
-		for (ou <- conf.opt[List[Map[String, String]]]("blog.init.users"); u <- ou)
-			await( Users.create(u("name"), u("email"), u("password"), None, None, u.get("url")) )
+		val conf = ConfigFactory.load
 		
-		for (ob <- conf.opt[List[Map[String, String]]]("blog.init.blogs"); b <- ob)
-			Blogs.create( b("domain"), b("head"), b("title"), b("subtitle"), b("description"), b("footer") )
-		
-		for (or <- conf.opt[List[Map[String, String]]]("blog.init.roles"); r <- or)
-			Roles.create( r("blogid").toInt, r("userid").toInt, r("role") )
-		
-		for (oc <- conf.opt[List[Map[String, String]]]("blog.init.categories"); c <- oc)
-			Categories.create( c("blogid").toInt, c("name") )
+		if (conf hasPath "blog.init") {
+			for (ou <- conf.opt[List[Map[String, String]]]("blog.init.users"); u <- ou)
+				await( Users.create(u("name"), u("email"), u("password"), None, None, u.get("url")) )
+			
+			for (ob <- conf.opt[List[Map[String, String]]]("blog.init.blogs"); b <- ob)
+				Blogs.create( b("domain"), b("head"), b("title"), b("subtitle"), b("description"), b("footer") )
+			
+			for (or <- conf.opt[List[Map[String, String]]]("blog.init.roles"); r <- or)
+				Roles.create( r("blogid").toInt, r("userid").toInt, r("role") )
+			
+			for (oc <- conf.opt[List[Map[String, String]]]("blog.init.categories"); c <- oc)
+				Categories.create( c("blogid").toInt, c("name") )
+		}
 	}
 	
 }
