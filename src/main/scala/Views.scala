@@ -54,7 +54,7 @@ object Views {
 				<script src="/coffee/create.js"></script>
 			</xml:group>
 		} {
-			<div class="container" ng-app="create" ng-controller="CreateController">
+			<div class="container" ng-app="create" ng-controller="CreateController" ng-cloak="">
 				<form class="form-create" ng-submit={s"submit('$base')"}>
 					<h2 class="form-create-heading">Blog Creation</h2>
 					<div class="form-group">
