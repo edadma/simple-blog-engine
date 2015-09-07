@@ -1,6 +1,6 @@
 package xyz.hyperreal.blog
 
-import spray.http.{StatusCodes, HttpResponse, HttpHeaders}
+import spray.http.{StatusCodes, HttpResponse, HttpHeaders, RemoteAddress}
 import spray.routing.directives.RouteDirectives._
 
 import org.joda.time.Instant
@@ -13,6 +13,10 @@ import collection.mutable.ListBuffer
 
 
 object Application extends SessionDirectives {
+	
+	def logVisit( ip: RemoteAddress, path: String, referer: Option[String], blog: dao.Blog ) {
+		
+	}
 	
 	def blogView( blog: dao.Blog, user: Option[models.User], posts: Seq[models.Post] ) = {
 		Views.blog( blog, user,

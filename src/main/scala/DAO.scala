@@ -395,3 +395,46 @@ object Medias extends TableQuery(new MediasTable(_)) {
 	
 	def list: Future[Seq[Media]] = db.run(this.result)
 }
+
+case class Visit(
+	blogid: Int,
+	ip: String,
+	host: Option[String],
+	path: String,
+	referrer: Option[String],
+	date: Instant,
+	id: Option[Int] = None
+)
+
+class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
+	def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+	def blogid = column[Int]("blogid")
+	def ip = column[String]("ip")
+	def host = column[Option[String]]("host")
+	def path = column[String]("path")
+	def referrer = column[Option[String]]("referrer")
+	def date = column[Instant]("date")
+	
+	def * = (blogid, ip, host, path, referrer, date, id.?) <> (Visit.tupled, Visit.unapply)
+}
+
+object Visits extends TableQuery(new VisitsTable(_)) {
+	def find(id: Int): Future[Option[Visit]] = db.run( filter(_.id === id) result ) map (_.headOption)
+
+	def findByBlogid(blogid: Int) = filter (_.blogid === blogid)
+
+	def create(
+		blogid: Int,
+		ip: String,
+		host: Option[String],
+		path: String,
+		referrer: Option[String],
+		date: Instant
+		) = db.run( this returning map(_.id) += Visit(blogid, ip, host, path, referrer, date) )
+
+	def delete(blogid: Int): Future[Int] = {
+		db.run(filter(_.blogid === blogid).delete)
+	}
+	
+	def list: Future[Seq[Visit]] = db.run(this.result)
+}
