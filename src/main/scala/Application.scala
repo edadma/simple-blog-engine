@@ -10,12 +10,15 @@ import in.azeemarshad.common.sessionutils.SessionDirectives
 
 import concurrent.ExecutionContext.Implicits.global
 import collection.mutable.ListBuffer
+import concurrent.Future
 
 
 object Application extends SessionDirectives {
 	
-	def logVisit( ip: RemoteAddress, path: String, referer: Option[String], blog: dao.Blog ) {
-		
+	def logVisit( ip: RemoteAddress, path: String, referrer: Option[String], blog: dao.Blog ) {
+		Future( ip.toOption.map(_.getHostName) ) map {
+			host => dao.Visits.create( blog.id.get, ip.toString, host, path, referrer, Instant.now )
+		}
 	}
 	
 	def blogView( blog: dao.Blog, user: Option[models.User], posts: Seq[models.Post] ) = {

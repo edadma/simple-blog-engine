@@ -416,12 +416,15 @@ class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
 	def date = column[Instant]("date")
 	
 	def * = (blogid, ip, host, path, referrer, date, id.?) <> (Visit.tupled, Visit.unapply)
+	def idx_visits_blogid = index("idx_visits_blogid", blogid)
+	def idx_visits_ip = index("idx_visits_ip", ip)
+	def idx_visits_referrer = index("idx_visits_referrer", referrer)
 }
 
 object Visits extends TableQuery(new VisitsTable(_)) {
 	def find(id: Int): Future[Option[Visit]] = db.run( filter(_.id === id) result ) map (_.headOption)
 
-	def findByBlogid(blogid: Int) = filter (_.blogid === blogid)
+	def findByBlogid(blogid: Int) = filter (_.blogid === blogid) sortBy (_.date.desc)
 
 	def create(
 		blogid: Int,
