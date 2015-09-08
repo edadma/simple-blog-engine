@@ -25,8 +25,8 @@ object Queries {
 		s => s map {case (v, u) => models.VisitJson.from( v, u )}
 	}
 	
-	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count join Users on (_.userid === _.id) result ) map {
-		s => s map {case (v, u) => models.VisitJson.from( v, Some(u) )}
+	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count joinLeft Users on (_.userid === _.id) result ) map {
+		s => s map {case (v, u) => models.VisitJson.from( v, u )}
 	}
 	
 	def toMonth( time: Instant ) = time.toDateTime withDayOfMonth 1 withTime (0, 0, 0, 0)
