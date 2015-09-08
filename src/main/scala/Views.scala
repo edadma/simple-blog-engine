@@ -243,7 +243,7 @@ object Views {
 			
 			<div class="row">
 				
-				<div class="col-md-10">
+				<div class="col-md-8">
 				
 					<div class="row">
 					
@@ -263,36 +263,34 @@ object Views {
 								}
 								</div>
 						</div>
-					
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Status</label><br/>
-								<label class="radio-inline">
-									<input type="radio" ng-model="status" value="live"/> live
-								</label>
-								<label class="radio-inline">
-									<input type="radio" ng-model="status" value="draft"/> draft
-								</label>
-							</div>
-							<div class="form-group">
-								<label>Commenting</label><br/>
-								<label class="radio-inline">
-									<input type="radio" ng-model="commenting" value="on"/> on
-								</label>
-								<label class="radio-inline">
-									<input type="radio" ng-model="commenting" value="off"/> off
-								</label>
-							</div>
-						</div>
 						
 					</div>
 					
 					<div class="row">
-				
 						<div class="col-md-12" ng-cloak="">
 							<ng-include src="'message.html'"></ng-include>
 						</div>
+					</div>
+				</div>
 				
+				<div class="col-md-2">
+					<div class="form-group">
+						<label>Status</label><br/>
+						<label class="radio-inline">
+							<input type="radio" ng-model="status" value="live"/> live
+						</label>
+						<label class="radio-inline">
+							<input type="radio" ng-model="status" value="draft"/> draft
+						</label>
+					</div>
+					<div class="form-group">
+						<label>Commenting</label><br/>
+						<label class="radio-inline">
+							<input type="radio" ng-model="commenting" value="on"/> on
+						</label>
+						<label class="radio-inline">
+							<input type="radio" ng-model="commenting" value="off"/> off
+						</label>
 					</div>
 				</div>
 				
