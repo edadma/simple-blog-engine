@@ -5,6 +5,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 	$scope.categories = {}
 	$scope.mode = 'post'
 	$scope.status = 'live'
+	$scope.commenting = 'on'
 	$scope.message = {type: 'none'}
 	
 	getPosts = ->
@@ -18,6 +19,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 	$scope.clear = ->
 		$scope.categories = {}
 		$scope.status = 'live'
+		$scope.commenting = 'on'
 		$scope.message = {type: 'none'}
 		$scope.title = ""
 		$scope.content = ""
@@ -42,6 +44,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 		$scope.title = postcopy.title
 		$scope.content = postcopy.content
 		$scope.status = postcopy.status
+		$scope.commenting = postcopy.commenting
 		$scope.id = postcopy.id
 		
 	$scope.update = ->
@@ -63,6 +66,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 				title: $scope.title
 				content: $scope.content
 				status: $scope.status
+				commenting: $scope.commenting
 				categories: categories
 			, (result, response) ->
 				if result.updated != 1
@@ -97,6 +101,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 				title: $scope.title
 				content: $scope.content
 				status: $scope.status
+				commenting: $scope.commenting
 				categories: categories
 			, (result, response) ->
 				$scope.message = {type: 'success', text: "post submitted"}

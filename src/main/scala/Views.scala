@@ -220,8 +220,8 @@ object Views {
 							<th>Title</th>
 							<th>Categories</th>
 							<th>Author</th>
+							<th>Commenting</th>
 							<th>Status</th>
-							<!-- <th>Comments</th> -->
 						</tr>
 					</thead>
 					<tbody>
@@ -232,6 +232,7 @@ object Views {
 							<td>{"{{post.title | limitTo: 25}}"}</td>
 							<td>{"{{keys(post.categories)}}"}</td>
 							<td>{"{{post.author}}"}</td>
+							<td><span ng-class="'label label-' + (post.commenting == 'on' ? 'success' : 'warning')">{"{{post.commenting}}"}</span></td>
 							<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
 						</tr>
 					</tbody>
@@ -271,6 +272,15 @@ object Views {
 								</label>
 								<label class="radio-inline">
 									<input type="radio" ng-model="status" value="draft"/> draft
+								</label>
+							</div>
+							<div class="form-group">
+								<label>Commenting</label><br/>
+								<label class="radio-inline">
+									<input type="radio" ng-model="commenting" value="on"/> on
+								</label>
+								<label class="radio-inline">
+									<input type="radio" ng-model="commenting" value="off"/> off
 								</label>
 							</div>
 						</div>

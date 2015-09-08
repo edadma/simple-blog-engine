@@ -54,7 +54,7 @@ object API extends SessionDirectives {
 	def postsGet( postid: Int ) = Posts.find( postid ) map (u => u map (models.Post.from(_)))
 	
 	def postsPost( blog: Blog, user: models.User, post: models.PostJson ) =
-		Posts.create( blog.id.get, user.id, post.title, post.content, Instant.now, post.status ) map { postid =>
+		Posts.create( blog.id.get, user.id, post.title, post.content, Instant.now, post.status, post.commenting ) map { postid =>
 			post.categories foreach (Categorizations.create( postid, _ ))
 			Map( "postid" -> postid )
 		}
@@ -65,7 +65,7 @@ object API extends SessionDirectives {
 		post.categories filterNot (categorizations contains _) foreach (Categorizations.create( pid, _ ))
 		categorizations filterNot (post.categories contains _) foreach (Categorizations.delete( pid, _ ))
 		
-		Posts.update( pid, post.title, post.content, post.status ) map (u => Map( "updated" -> u ))
+		Posts.update( pid, post.title, post.content, post.status, post.commenting ) map (u => Map( "updated" -> u ))
 	}
 	
 	def postsDelete( postid: Int ) = Posts.delete( postid ) map (u => Map( "deleted" -> u ))

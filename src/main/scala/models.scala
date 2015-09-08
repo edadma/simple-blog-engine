@@ -72,11 +72,12 @@ case class BlogJson(
 	categories: String,
 	subtitle: String,
 	description: String,
-	footer: String
+	footer: String,
+	commenting: String
 )
 
 object BlogJson {
-	implicit val blogJson = jsonFormat6(BlogJson.apply)
+	implicit val blogJson = jsonFormat7(BlogJson.apply)
 }
 
 case class PostJson(
@@ -84,11 +85,12 @@ case class PostJson(
 	title: String,
 	content: String,
 	status: String,
+	commenting: String,
 	categories: Seq[Int]
 )
 
 object PostJson {
-	implicit val postJson = jsonFormat5( PostJson.apply )
+	implicit val postJson = jsonFormat6( PostJson.apply )
 }
 
 case class Post(
@@ -100,18 +102,19 @@ case class Post(
 	content: String,
 	date: Instant,
 	status: String,
+	commenting: String,
 	categories: Map[String, Int]
 )
 
 object Post {
 
-	implicit val post = jsonFormat9( Post.apply )
+	implicit val post = jsonFormat10( Post.apply )
 
 	def from( p: dao.Post ) = Post( p.id.get, p.blogid, p.authorid, await(dao.Users.find(p.authorid)).get.name, p.title, p.content,
-																	p.date, p.status, Queries.findCategories(p.id.get) )
+																	p.date, p.status, p.commenting, Queries.findCategories(p.id.get) )
 	
 	def from( p: dao.Post, u: dao.User ) = Post( p.id.get, p.blogid, p.authorid, u.name, p.title, p.content,
-																								p.date, p.status, Queries.findCategories(p.id.get) )
+																								p.date, p.status, p.commenting, Queries.findCategories(p.id.get) )
 	
 }
 

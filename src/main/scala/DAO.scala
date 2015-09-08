@@ -100,11 +100,12 @@ case class Blog(
 	subtitle: String,
 	description: String,
 	footer: String,
+	commenting: String = "on",
 	id: Option[Int] = None
 )
 
 object Blog {
-	implicit val blog = jsonFormat7(Blog.apply)
+	implicit val blog = jsonFormat8(Blog.apply)
 }
 
 class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
@@ -114,9 +115,10 @@ class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
 	def title = column[String]("title")
 	def subtitle = column[String]("subtitle")
 	def description = column[String]("description")
+	def commenting = column[String]("commenting")
 	def footer = column[String]("footer")
 	
-	def * = (domain, head, title, subtitle, description, footer, id.?) <> (Blog.apply _ tupled, Blog.unapply)
+	def * = (domain, head, title, subtitle, description, footer, commenting, id.?) <> (Blog.apply _ tupled, Blog.unapply)
 	def idx_blogs_domain = index("idx_blogs_domain", domain)
 }
 
@@ -149,6 +151,7 @@ case class Post(
 	content: String,
 	date: Instant,
 	status: String,
+	commenting: String = "on",
 	id: Option[Int] = None
 )
 
@@ -160,23 +163,24 @@ class PostsTable(tag: Tag) extends Table[Post](tag, "posts") {
 	def content = column[String]("content")
 	def date = column[Instant]("date")
 	def status = column[String]("status")
+	def commenting = column[String]("commenting")
 	
-	def * = (blogid, authorid, title, content, date, status, id.?) <> (Post.tupled, Post.unapply)
+	def * = (blogid, authorid, title, content, date, status, commenting, id.?) <> (Post.tupled, Post.unapply)
 }
 
 object Posts extends TableQuery(new PostsTable(_)) {
 	def find(id: Int): Future[Option[Post]] = db.run( filter(_.id === id) result ) map (_.headOption)
 
-	def create( blogid: Int, authorid: Int, title: String, content: String, date: Instant, status: String ): Future[Int] = {
-		db.run(this returning map(_.id) += Post(blogid, authorid, title, content, date, status))
+	def create( blogid: Int, authorid: Int, title: String, content: String, date: Instant, status: String, commenting: String ): Future[Int] = {
+		db.run(this returning map(_.id) += Post(blogid, authorid, title, content, date, status, commenting))
 	}
 
 	def delete(id: Int): Future[Int] = {
 		db.run(filter(_.id === id).delete)
 	}
 	
-	def update( id: Int, title: String, content: String, status: String ) = db.run( filter(_.id === id) map (p => (p.title, p.content, p.status))
-		update (title, content, status) )
+	def update( id: Int, title: String, content: String, status: String, commenting: String ) = db.run( filter(_.id === id) map (p => (p.title, p.content, p.status, p.commenting))
+		update (title, content, status, commenting) )
 	
 	def list: Future[Seq[Post]] = db.run(this.result)
 
