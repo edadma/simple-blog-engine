@@ -407,6 +407,7 @@ case class Visit(
 	path: String,
 	referrer: Option[String],
 	date: Instant,
+	userid: Option[Int],
 	id: Option[Int] = None
 )
 
@@ -418,8 +419,9 @@ class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
 	def path = column[String]("path")
 	def referrer = column[Option[String]]("referrer")
 	def date = column[Instant]("date")
+	def userid = column[Option[Int]]("userid")
 	
-	def * = (blogid, ip, host, path, referrer, date, id.?) <> (Visit.tupled, Visit.unapply)
+	def * = (blogid, ip, host, path, referrer, date, userid, id.?) <> (Visit.tupled, Visit.unapply)
 	def idx_visits_blogid = index("idx_visits_blogid", blogid)
 	def idx_visits_ip = index("idx_visits_ip", ip)
 	def idx_visits_referrer = index("idx_visits_referrer", referrer)
@@ -436,8 +438,9 @@ object Visits extends TableQuery(new VisitsTable(_)) {
 		host: Option[String],
 		path: String,
 		referrer: Option[String],
-		date: Instant
-		) = db.run( this returning map(_.id) += Visit(blogid, ip, host, path, referrer, date) )
+		date: Instant,
+		userid: Option[Int]
+		) = db.run( this returning map(_.id) += Visit(blogid, ip, host, path, referrer, date, userid) )
 
 	def delete(blogid: Int): Future[Int] = {
 		db.run(filter(_.blogid === blogid).delete)

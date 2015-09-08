@@ -146,3 +146,24 @@ case class CommentWithReplies( comment: Comment, replies: Seq[CommentWithReplies
 object CommentWithReplies {
 	implicit val commentWithRepliesFormat: JsonFormat[CommentWithReplies] = lazyFormat(jsonFormat(CommentWithReplies.apply, "comment", "replies"))
 }
+
+case class VisitJson(
+	id: Int,
+	ip: String,
+	host: Option[String],
+	path: String,
+	referrer: Option[String],
+	date: Instant,
+	userid: Option[Int],
+	username: Option[String]
+)
+
+object VisitJson {
+	implicit val visitJson = jsonFormat8( VisitJson.apply )
+	
+	def from( v: dao.Visit, u: dao.User ) =
+		v.userid match {
+			case None => VisitJson( v.id.get, v.ip, v.host, v.path, v.referrer, v.date, None, None )
+			case userid => VisitJson( v.id.get, v.ip, v.host, v.path, v.referrer, v.date, userid, Some(u.name) )
+		}
+}

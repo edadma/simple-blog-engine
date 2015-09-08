@@ -21,7 +21,9 @@ object Queries {
 	
 	def visitsCount( blogid: Int ) = db.run( dao.Visits.findByBlogid(blogid).length result )
 	
-	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count result )
+	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count join Users on (_.userid === _.id) result ) map {
+		s => s map {case (v, u) => models.VisitJson.from( v, u )}
+	}
 	
 	def toMonth( time: Instant ) = time.toDateTime withDayOfMonth 1 withTime (0, 0, 0, 0)
 	
@@ -32,13 +34,13 @@ object Queries {
 	
 	def findPost( postid: Int ): Seq[models.Post] = await( Posts.find(postid) ) map (p => Seq( models.Post.from(p) )) getOrElse Seq.empty
 	
-	def findPostsBefore( blogid: Int, before: Instant, limit: Int ): Seq[models.Post] = dbrun( Posts.findBefore(blogid, before) filter (_.status === "live") join Users on (_.authorid === _.id)
-		take limit result ) map {case (p, u) => models.Post.from(p, u)}
+	def findPostsBefore( blogid: Int, before: Instant, limit: Int ): Seq[models.Post] = dbrun( Posts.findBefore(blogid, before) filter (_.status === "live") take limit join
+		Users on (_.authorid === _.id) result ) map {case (p, u) => models.Post.from(p, u)}
 	
 	def findPosts( blogid: Int ) = dbrun( Posts.findByBlogid(blogid) join Users on (_.authorid === _.id) result ) map
 		{case (p, u) => models.Post.from(p, u)}
 	
-	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) filter (_.status === "live") join Users on (_.authorid === _.id) take limit result ) map
+	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) filter (_.status === "live") take limit join Users on (_.authorid === _.id) result ) map
 		{case (p, u) => models.Post.from(p, u)}
 	
 //	def findRecent( blogid: Int, limit: Int ) = dbrun( Posts.findByBlogid(blogid) take limit map (p => (p.id, p.title)) result )

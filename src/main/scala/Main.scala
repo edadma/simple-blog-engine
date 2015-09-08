@@ -74,8 +74,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		// application routes
 		//
 		//hostName {h => complete(h)} ~
-		(get & pathPrefixTest( !("api"|"setup-admin"|"admin") ) & clientIP & unmatchedPath & optionalHeaderValueByName( "Referer" ) & blog) { (ip, path, referrer, blog) =>
-			Application.logVisit( ip, path toString, referrer, blog )
+		(get & pathPrefixTest( !("api"|"setup-admin"|"admin") ) & clientIP & unmatchedPath & optionalHeaderValueByName( "Referer" ) & user) { (ip, path, referrer, blog, user) =>
+			Application.logVisit( ip, path toString, referrer, blog, user )
 			reject } ~
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~

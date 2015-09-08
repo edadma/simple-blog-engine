@@ -327,7 +327,37 @@ object Views {
 		</xml:group>
 		
 	def adminVisits( blog: dao.Blog ) =
-		<h1 class="page-header">Blog Visits</h1>
+		<xml:group>
+			<h1 class="page-header">Blog Visits</h1>
+
+			<div class="table-responsive">
+				<table class="table table-striped table-hover">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Date</th>
+							<th>Time</th>
+							<th>IP</th>
+							<th>Host</th>
+							<th>Path</th>
+							<th>Referrer</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="post in posts" ng-click="edit(post)" ng-cloak="">
+							<td>{"{{post.id}}"}</td>
+							<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
+							<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
+							<td>{"{{post.title | limitTo: 25}}"}</td>
+							<td>{"{{keys(post.categories)}}"}</td>
+							<td>{"{{post.author}}"}</td>
+							<td><span ng-class="'label label-' + (post.commenting == 'on' ? 'success' : 'warning')">{"{{post.commenting}}"}</span></td>
+							<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</xml:group>
 	
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],

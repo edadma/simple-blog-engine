@@ -15,9 +15,9 @@ import concurrent.Future
 
 object Application extends SessionDirectives {
 	
-	def logVisit( ip: RemoteAddress, path: String, referrer: Option[String], blog: dao.Blog ) {
+	def logVisit( ip: RemoteAddress, path: String, referrer: Option[String], blog: dao.Blog, user: Option[models.User] ) {
 		Future( ip.toOption.map(_.getHostName) ) map {
-			host => dao.Visits.create( blog.id.get, ip.toString, host, path, referrer, Instant.now )
+			host => dao.Visits.create( blog.id.get, ip.toString, host, path, referrer, Instant.now, user map (_.id) )
 		}
 	}
 	
