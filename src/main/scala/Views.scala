@@ -156,6 +156,7 @@ object Views {
 				<script src={s"/webjars/angularjs/$ANGULARJS/angular-route.min.js"}></script>
 				<script src="/coffee/admin.js"></script>
 				<script src="/coffee/posts.js"></script>
+				<script src="/coffee/visits.js"></script>
 			</xml:group>
 		} {
 			<div ng-app="admin" ng-controller="AdminController">
@@ -341,22 +342,27 @@ object Views {
 							<th>Host</th>
 							<th>Path</th>
 							<th>Referrer</th>
+							<th>User #</th>
+							<th>User Name</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="post in posts" ng-click="edit(post)" ng-cloak="">
-							<td>{"{{post.id}}"}</td>
-							<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
-							<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
-							<td>{"{{post.title | limitTo: 25}}"}</td>
-							<td>{"{{keys(post.categories)}}"}</td>
-							<td>{"{{post.author}}"}</td>
-							<td><span ng-class="'label label-' + (post.commenting == 'on' ? 'success' : 'warning')">{"{{post.commenting}}"}</span></td>
-							<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
+						<tr ng-repeat="visit in visits" ng-cloak="">
+							<td>{"{{visit.id}}"}</td>
+							<td>{"{{visit.date.millis | date: 'yy-MM-dd'}}"}</td>
+							<td>{"{{visit.date.millis | date: 'HH:mm'}}"}</td>
+							<td>{"{{visit.ip}}"}</td>
+							<td>{"{{visit.host}}"}</td>
+							<td>{"{{visit.path}}"}</td>
+							<td>{"{{visit.referrer}}"}</td>
+							<td>{"{{visit.userid}}"}</td>
+							<td>{"{{visit.username}}"}</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
+			
+			<div><ng-include src="'/message.html'"></ng-include></div>
 		</xml:group>
 	
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],

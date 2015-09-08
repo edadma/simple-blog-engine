@@ -129,6 +129,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		pathPrefix( "api"/"v1" ) {
 			(get & path( "visits"/"count" ) & admin) {
 				(b, _) => complete( API.visitsCount(b) ) } ~
+			(get & path( "visits" ) & admin) {
+				(b, _) => complete( API.visits(b) ) } ~
 			(get & path("domains"/Segment)) {
 				d => complete( API.domainsGet(d) ) } ~
 			(get & path("blogs") & blog) {

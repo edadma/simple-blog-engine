@@ -21,8 +21,12 @@ object Queries {
 	
 	def visitsCount( blogid: Int ) = db.run( dao.Visits.findByBlogid(blogid).length result )
 	
-	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count join Users on (_.userid === _.id) result ) map {
+	def visits( blogid: Int ) = db.run( dao.Visits.findByBlogid(blogid) joinLeft Users on (_.userid === _.id) result ) map {
 		s => s map {case (v, u) => models.VisitJson.from( v, u )}
+	}
+	
+	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count join Users on (_.userid === _.id) result ) map {
+		s => s map {case (v, u) => models.VisitJson.from( v, Some(u) )}
 	}
 	
 	def toMonth( time: Instant ) = time.toDateTime withDayOfMonth 1 withTime (0, 0, 0, 0)

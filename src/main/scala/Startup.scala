@@ -25,7 +25,10 @@ object Startup {
 				Posts.schema ++
 				Categorizations.schema ++
 				Comments.schema ++
-				Links.schema
+				Links.schema ++
+				Sidebars.schema ++
+				Medias.schema ++
+				Visits.schema
 			).create
 		)))
 	

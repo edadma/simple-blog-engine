@@ -411,6 +411,12 @@ case class Visit(
 	id: Option[Int] = None
 )
 
+object Visit {
+	import xyz.hyperreal.blog.models.Implicits._
+	
+	implicit val blog = jsonFormat8(Visit.apply)
+}
+
 class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
 	def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 	def blogid = column[Int]("blogid")
@@ -421,7 +427,7 @@ class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
 	def date = column[Instant]("date")
 	def userid = column[Option[Int]]("userid")
 	
-	def * = (blogid, ip, host, path, referrer, date, userid, id.?) <> (Visit.tupled, Visit.unapply)
+	def * = (blogid, ip, host, path, referrer, date, userid, id.?) <> (Visit.apply _ tupled, Visit.unapply)
 	def idx_visits_blogid = index("idx_visits_blogid", blogid)
 	def idx_visits_ip = index("idx_visits_ip", ip)
 	def idx_visits_referrer = index("idx_visits_referrer", referrer)

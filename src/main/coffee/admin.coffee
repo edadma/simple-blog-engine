@@ -11,5 +11,6 @@ app.config ['$routeProvider', ($routeProvider) ->
 			controller: 'PostsController'
 		.when '/visits',
 			templateUrl: '/admin/visits'
+			controller: 'VisitsController'
 		.otherwise redirectTo: '/posts'
 	]

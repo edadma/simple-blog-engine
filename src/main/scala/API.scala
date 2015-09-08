@@ -27,6 +27,8 @@ object API extends SessionDirectives {
 
 	def visitsCount( blog: Blog ) = Queries.visitsCount( blog.id.get ) map (c => Map( "count" -> c ))
 	
+	def visits( blog: Blog ) = Queries.visits( blog.id.get )
+	
 	def domainsGet( domain: String ) =
 		if (reserved.get exists (_ == domain))
 			Future( Map("available" -> false) )

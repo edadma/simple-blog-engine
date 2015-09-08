@@ -1,4 +1,4 @@
-angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', '$document', ($scope, $resource, $document) ->
+angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', ($scope, $resource) ->
 	angular.element('#titleInput').focus()
 	Posts = $resource '/api/v1/posts/:id'
 	

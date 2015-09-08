@@ -161,9 +161,9 @@ case class VisitJson(
 object VisitJson {
 	implicit val visitJson = jsonFormat8( VisitJson.apply )
 	
-	def from( v: dao.Visit, u: dao.User ) =
+	def from( v: dao.Visit, u: Option[dao.User] ) =
 		v.userid match {
 			case None => VisitJson( v.id.get, v.ip, v.host, v.path, v.referrer, v.date, None, None )
-			case userid => VisitJson( v.id.get, v.ip, v.host, v.path, v.referrer, v.date, userid, Some(u.name) )
+			case userid => VisitJson( v.id.get, v.ip, v.host, v.path, v.referrer, v.date, userid, Some(u.get.name) )
 		}
 }
