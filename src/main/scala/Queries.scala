@@ -21,6 +21,8 @@ object Queries {
 	
 	def visitsCount( blogid: Int ) = db.run( dao.Visits.findByBlogid(blogid).length result )
 	
+	def visits( blogid: Int, index: Int, count: Int ) = db.run( dao.Visits.findByBlogid(blogid) drop index take count result )
+	
 	def toMonth( time: Instant ) = time.toDateTime withDayOfMonth 1 withTime (0, 0, 0, 0)
 	
 // 	def findBlog( domain: String ) =

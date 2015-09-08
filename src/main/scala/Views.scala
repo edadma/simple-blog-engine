@@ -12,6 +12,8 @@ import models._
 
 
 object Views {
+	val ANGULARJS = "1.4.4"
+	
 	val postDateFormat = DateTimeFormat.forPattern( "EEEE, MMMM d, yyyy" )
 	val commentDateFormat = DateTimeFormat.forPattern( "MMMM d, yyyy" )
 	val archivesTextDateFormat = DateTimeFormat.forPattern( "MMMM yyyy" )
@@ -49,8 +51,8 @@ object Views {
 		main( "Blog Creation" ) {
 			<xml:group>
 				<link href="/css/create.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular.min.js"}></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular-resource.min.js"}></script>
 				<script src="/coffee/create.js"></script>
 			</xml:group>
 		} {
@@ -113,8 +115,8 @@ object Views {
 		main( "Registration" ) {
 			<xml:group>
 				<link href="/css/register.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular.min.js"}></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular-resource.min.js"}></script>
 				<script src="/coffee/register.js"></script>
 			</xml:group>
 		} {
@@ -144,15 +146,16 @@ object Views {
 			</div>
 		}
 	
-	def admin( blog: dao.Blog, user: models.User ) =
+	def admin( blog: dao.Blog ) =
 		main( "Dashboard: " + blog.title ) {
 			<xml:group>
 				<link href="/css/admin.css" rel="stylesheet"/>
-				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
-				<script src="/webjars/angularjs/1.4.4/angular-sanitize.min.js"></script>
-				<script src="/webjars/angularjs/1.4.4/angular-resource.min.js"></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular.min.js"}></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular-sanitize.min.js"}></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular-resource.min.js"}></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular-route.min.js"}></script>
 				<script src="/coffee/admin.js"></script>
-				<script src="/coffee/post.js"></script>
+				<script src="/coffee/posts.js"></script>
 			</xml:group>
 		} {
 			<div ng-app="admin" ng-controller="AdminController">
@@ -183,125 +186,18 @@ object Views {
 				
 				<div class="container-fluid">
 
-					<div class="row" ng-controller="PostController">
+					<div class="row">
 						
 						<div class="col-sm-3 col-md-2 sidebar">
 							<ul class="nav nav-sidebar">
 								<!-- <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li> -->
-								<li><a href="#">Posts</a></li>
+								<li><a href="/admin#/posts">Posts</a></li>
+								<li><a href="/admin#/visits">Visits</a></li>
 							</ul>
 						</div>
 						
 						<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-							<h1 class="page-header">Blog Posts</h1>
-
-							<div class="table-responsive">
-								<table class="table table-striped table-hover">
-									<thead>
-										<tr>
-											<th>#</th>
-											<th>Date</th>
-											<th>Time</th>
-											<th>Title</th>
-											<th>Categories</th>
-											<th>Author</th>
-											<th>Status</th>
-											<!-- <th>Comments</th> -->
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="post in posts" ng-click="edit(post)" ng-cloak="">
-											<td>{"{{post.id}}"}</td>
-											<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
-											<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
-											<td>{"{{post.title | limitTo: 25}}"}</td>
-											<td>{"{{keys(post.categories)}}"}</td>
-											<td>{"{{post.author}}"}</td>
-											<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-							
-							<h2 class="sub-header" ng-cloak="">{"{{mode == 'post' ? 'New Post' : 'Editing Post #' + id}}"}</h2>
-							
-							<div class="row">
-								
-								<div class="col-md-10">
-								
-									<div class="row">
-									
-										<div class="col-md-5">
-											<div class="form-group">
-												<label>Post Title</label>
-												<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
-										</div>
-										
-										<div class="col-md-5">
-											<div class="form-group">
-												<label>Categories</label><br/>
-												{
-													for ((id, name) <- Queries.findAllCategories( blog.id.get ))
-														yield
-															<label style="font-weight: normal;"><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/>&nbsp;{name}&nbsp;&nbsp;</label>
-												}
-												</div>
-										</div>
-									
-										<div class="col-md-2">
-											<div class="form-group">
-												<label>Status</label><br/>
-												<label class="radio-inline">
-													<input type="radio" ng-model="status" value="live"/> live
-												</label>
-												<label class="radio-inline">
-													<input type="radio" ng-model="status" value="draft"/> draft
-												</label>
-											</div>
-										</div>
-										
-									</div>
-									
-									<div class="row">
-								
-										<div class="col-md-12" ng-cloak="">
-											<ng-include src="'message.html'"></ng-include>
-										</div>
-								
-									</div>
-								</div>
-								
-								<div class="col-md-2" ng-cloak="">
-									<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block thin">New</button>
-									<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block thin">Submit</button>
-									<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block thin">Update</button>
-									<button ng-show="mode == 'post'" ng-click="clear()" class="btn btn-default btn-block thin">Clear</button>
-									<button ng-show="mode == 'edit'" ng-click="delete()" class="btn btn-default btn-block thin">Delete</button>
-								</div>
-							
-							</div>
-							
-							<div class="row">
-							
-								<div class="col-md-12">
-									<div class="form-group">
-										<label>Post Content</label>
-										<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
-									<div class="panel panel-default">
-										<div class="panel-heading">Preview</div>
-										<div class="panel-body">
-											<style scoped=""> {
-												io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
-											}
-											</style>
-											<h2 class="blog-post-title"><span ng-bind="title"/></h2>
-											<div ng-bind-html="content"></div>
-										</div>
-									</div>
-								</div>
-								
-							</div>
-								
+								<div ng-view=""></div>
 						</div>
 								
 					</div>
@@ -310,6 +206,118 @@ object Views {
 			</div>
 		}
 		
+	def adminPosts( blog: dao.Blog ) =
+		<xml:group>
+			<h1 class="page-header">Blog Posts</h1>
+
+			<div class="table-responsive">
+				<table class="table table-striped table-hover">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Date</th>
+							<th>Time</th>
+							<th>Title</th>
+							<th>Categories</th>
+							<th>Author</th>
+							<th>Status</th>
+							<!-- <th>Comments</th> -->
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="post in posts" ng-click="edit(post)" ng-cloak="">
+							<td>{"{{post.id}}"}</td>
+							<td>{"{{post.date.millis | date: 'yy-MM-dd'}}"}</td>
+							<td>{"{{post.date.millis | date: 'HH:mm'}}"}</td>
+							<td>{"{{post.title | limitTo: 25}}"}</td>
+							<td>{"{{keys(post.categories)}}"}</td>
+							<td>{"{{post.author}}"}</td>
+							<td><span ng-class="'label label-' + (post.status == 'live' ? 'success' : 'warning')">{"{{post.status}}"}</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<h2 class="sub-header" ng-cloak="">{"{{mode == 'post' ? 'New Post' : 'Editing Post #' + id}}"}</h2>
+			
+			<div class="row">
+				
+				<div class="col-md-10">
+				
+					<div class="row">
+					
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Post Title</label>
+								<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+						</div>
+						
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Categories</label><br/>
+								{
+									for ((id, name) <- Queries.findAllCategories( blog.id.get ))
+										yield
+											<label style="font-weight: normal;"><input type="checkbox" ng-model={"categories." + name} ng-true-value={id.toString} ng-false-value="false"/>&nbsp;{name}&nbsp;&nbsp;</label>
+								}
+								</div>
+						</div>
+					
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Status</label><br/>
+								<label class="radio-inline">
+									<input type="radio" ng-model="status" value="live"/> live
+								</label>
+								<label class="radio-inline">
+									<input type="radio" ng-model="status" value="draft"/> draft
+								</label>
+							</div>
+						</div>
+						
+					</div>
+					
+					<div class="row">
+				
+						<div class="col-md-12" ng-cloak="">
+							<ng-include src="'message.html'"></ng-include>
+						</div>
+				
+					</div>
+				</div>
+				
+				<div class="col-md-2" ng-cloak="">
+					<button ng-show="mode == 'edit'" ng-click="post()" class="btn btn-default btn-block thin">New</button>
+					<button ng-show="mode == 'post'" ng-click="submit()" class="btn btn-default btn-block thin">Submit</button>
+					<button ng-show="mode == 'edit'" ng-click="update()" class="btn btn-default btn-block thin">Update</button>
+					<button ng-show="mode == 'post'" ng-click="clear()" class="btn btn-default btn-block thin">Clear</button>
+					<button ng-show="mode == 'edit'" ng-click="delete()" class="btn btn-default btn-block thin">Delete</button>
+				</div>
+			
+			</div>
+			
+			<div class="row">
+			
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Post Content</label>
+						<textarea class="form-control" rows="10" ng-model="content"></textarea></div>
+					<div class="panel panel-default">
+						<div class="panel-heading">Preview</div>
+						<div class="panel-body">
+							<style scoped=""> {
+								io.Source.fromInputStream( getClass.getResourceAsStream("blog.css") ).getLines.mkString("\n")
+							}
+							</style>
+							<h2 class="blog-post-title"><span ng-bind="title"/></h2>
+							<div ng-bind-html="content"></div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</xml:group>
+	
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],
 						posts: Seq[(Post, Seq[CommentWithReplies], Int)] ) =
@@ -317,7 +325,7 @@ object Views {
 			<xml:group>
 				<link href="/css/blog.css" rel="stylesheet"/>
 				
-				<script src="/webjars/angularjs/1.4.4/angular.min.js"></script>
+				<script src={s"/webjars/angularjs/$ANGULARJS/angular.min.js"}></script>
 				<script src="/coffee/blog.js"></script>
 				{xml.Unparsed(b.head)}
 			</xml:group>

@@ -1,4 +1,4 @@
-angular.module( 'admin' ).controller 'PostController', ['$scope', '$resource', ($scope, $resource) ->
+angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', ($scope, $resource) ->
 	Posts = $resource '/api/v1/posts/:id'
 	
 	$scope.categories = {}
