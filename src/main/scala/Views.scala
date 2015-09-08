@@ -36,13 +36,13 @@ object Views {
 				<link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
 				<link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet"/>
 				
+				<script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
 				{head}
 			</head>
 			
 			<body>
 				{content}
 				
-				<script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
 				<script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 			</body>
 		</html>
@@ -249,7 +249,7 @@ object Views {
 						<div class="col-md-5">
 							<div class="form-group">
 								<label>Post Title</label>
-								<input type="text" class="form-control" ng-model="title" autofocus=""/></div>
+								<input id="titleInput" type="text" class="form-control" ng-model="title" autofocus=""/></div>
 						</div>
 						
 						<div class="col-md-5">
@@ -317,6 +317,9 @@ object Views {
 				
 			</div>
 		</xml:group>
+		
+	def adminVisits( blog: dao.Blog ) =
+		<h1 class="page-header">Blog Visits</h1>
 	
 	def blog( b: dao.Blog, user: Option[models.User], newer: Boolean, older: Boolean, recent: Seq[models.Post],
 						categories: Seq[(Int, String)], archives: Seq[DateTime], links: Seq[(String, String)],

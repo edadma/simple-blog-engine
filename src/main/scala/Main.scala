@@ -113,6 +113,8 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 			(b, _) => complete( Views.admin(b) ) } ~
 		(get & path( "admin"/"posts" ) & admin) {
 			(b, _) => complete( Views.adminPosts(b) ) } ~
+		(get & path( "admin"/"visits" ) & admin) {
+			(b, _) => complete( Views.adminVisits(b) ) } ~
 // 		(post & path( "post" ) & admin & formFields( 'category.as[Int], 'headline, 'text )) {
 // 			(b, u, category, headline, text) => complete( Application.post(b, u, category, headline, text) ) } ~
 		(get & path( "logout" ) & session) {

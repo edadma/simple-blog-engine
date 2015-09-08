@@ -9,5 +9,7 @@ app.config ['$routeProvider', ($routeProvider) ->
 		.when '/posts',
 			templateUrl: '/admin/posts'
 			controller: 'PostsController'
+		.when '/visits',
+			templateUrl: '/admin/visits'
 		.otherwise redirectTo: '/posts'
 	]

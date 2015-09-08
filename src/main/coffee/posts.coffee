@@ -1,4 +1,5 @@
-angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', ($scope, $resource) ->
+angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', '$document', ($scope, $resource, $document) ->
+	angular.element('#titleInput').focus()
 	Posts = $resource '/api/v1/posts/:id'
 	
 	$scope.categories = {}
@@ -11,7 +12,7 @@ angular.module( 'admin' ).controller 'PostsController', ['$scope', '$resource', 
 			$scope.posts = result
 		,	(response) ->
 			$scope.message = {type: 'error', text: response.data}
-	
+		
 	getPosts()
 	
 	$scope.clear = ->
