@@ -6,7 +6,8 @@ organization  := "xyz.hyperreal"
 
 scalaVersion  := "2.11.7"
 
-javaOptions   += "-Dconfig.file=local.application.conf"
+//javaOptions   += "-Dconfig.file=vps/application.conf"
+javaOptions   += "-Dconfig.file=vps/local.application.conf"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-language:postfixOps", "-encoding", "utf8")
 

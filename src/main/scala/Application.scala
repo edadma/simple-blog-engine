@@ -11,13 +11,17 @@ import in.azeemarshad.common.sessionutils.SessionDirectives
 import concurrent.ExecutionContext.Implicits.global
 import collection.mutable.ListBuffer
 import concurrent.Future
+import util.{Try, Success, Failure}
 
 
 object Application extends SessionDirectives {
 	
 	def logVisit( ip: RemoteAddress, path: String, referrer: Option[String], blog: dao.Blog, user: Option[models.User] ) {
-		Future( ip.toOption.map(_.getHostName) ) map {
-			host => dao.Visits.create( blog.id.get, ip.toString, host, path, referrer, Instant.now, user map (_.id) )
+		Future( ip.toOption.map(_.getHostName) ) onComplete {
+			case Success(host) =>
+				dao.Visits.create( blog.id.get, ip.toString, host, path, referrer, Instant.now, user map (_.id) )
+			case Failure(e) =>
+				log.info( e toString )
 		}
 	}
 	

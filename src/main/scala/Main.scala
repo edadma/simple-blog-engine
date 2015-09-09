@@ -25,12 +25,12 @@ import util.{Success, Failure}
 object Main extends App with SimpleRoutingApp with SessionDirectives {
 
 	Startup
+	
+	lazy implicit val akka = ActorSystem( "on-spray-can" )
+	implicit val context = akka.dispatcher
 
   val conf = ConfigFactory.load
 	val system = conf.opt[String]( "blog.domain.system" )
-	
-	implicit val akka = ActorSystem( "on-spray-can" )
-	implicit val context = akka.dispatcher
 
   startServer( conf.get[String]("blog.server.interface"), conf.get[Int]("blog.server.port") ) {
 	
@@ -58,25 +58,34 @@ object Main extends App with SimpleRoutingApp with SessionDirectives {
 		val systemValidate = validate( system != None, "blog.domain.system not set" ) & host( system.getOrElse("") )
 		
 		//
+		// robots.txt request logging
+		//
+		(get & pathPrefixTest( "robots.txt" ) & clientIP & unmatchedPath & user) { (ip, path, blog, user) =>
+			Application.logVisit( ip, path toString, None, blog, user )
+			reject } ~
+		//
 		// resource renaming routes (these will mostly be removed as soon as possible)
 		//
 		pathPrefix("sass") {
 			getFromResourceDirectory("resources/public") } ~
 		(pathPrefix("js") | pathPrefix("css")) {
 			getFromResourceDirectory("public") } ~
-		pathSuffixTest( """.*(?:\.(?:html|png|ico))"""r ) { _ =>
+		pathSuffixTest( """.*(?:\.(?:html|png|ico|txt))"""r ) { _ =>
 			getFromResourceDirectory( "public" ) } ~
 		pathPrefix("coffee") {
 			getFromResourceDirectory("public/js") } ~
 		pathPrefix("webjars") {
 			getFromResourceDirectory("META-INF/resources/webjars") } ~
 		//
-		// application routes
+		// application request logging (ignores admin and api requests)
 		//
-		//hostName {h => complete(h)} ~
 		(get & pathPrefixTest( !("api"|"setup-admin"|"admin") ) & clientIP & unmatchedPath & optionalHeaderValueByName( "Referer" ) & user) { (ip, path, referrer, blog, user) =>
 			Application.logVisit( ip, path toString, referrer, blog, user )
 			reject } ~
+		//
+		// application routes
+		//
+		//hostName {h => complete(h)} ~
 		(get & pathSingleSlash & user) {
 			(b, u) => complete( Application.index(b, u) ) } ~
 		(get & pathSingleSlash & systemValidate) {
