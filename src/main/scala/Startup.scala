@@ -39,7 +39,7 @@ object Startup {
 				await( Users.create(u("name"), u("email"), u("password"), None, None, u.get("url")) )
 			
 			for (ob <- conf.opt[List[Map[String, String]]]("blog.init.blogs"); b <- ob)
-				Blogs.create( b("domain"), b("head"), b("title"), b("subtitle"), b("description"), b("footer") )
+				Blogs.create( b("domain"), b.get("headCode"), b("title"), b("subtitle"), b("description"), b.get("footer"), b.get("bodyCode"), b("commenting") )
 			
 			for (or <- conf.opt[List[Map[String, String]]]("blog.init.roles"); r <- or)
 				Roles.create( r("blogid").toInt, r("userid").toInt, r("role") )

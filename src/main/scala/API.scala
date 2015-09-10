@@ -38,7 +38,7 @@ object API extends SessionDirectives {
 	def blogsGet( domain: String ) = Blogs.find( domain )
 	
 	def blogsPost( blog: models.BlogJson ) = {
-		Blogs.create( blog.domain, "", blog.title, blog.subtitle, blog.description, blog.footer ) map 
+		Blogs.create( blog.domain, blog.headCode, blog.title, blog.subtitle, blog.description, blog.footer, blog.bodyCode, blog.commenting ) map 
 			{ id =>
 				for (c <- blog.categories split "," map (_.trim) filter (_ != "") distinct)
 					Categories.create( id, c )

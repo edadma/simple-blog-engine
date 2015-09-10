@@ -74,7 +74,7 @@ object Views {
 					<div class="form-group">
 						<textarea class="form-control" rows="3" ng-model="blog.description" placeholder="Description"></textarea></div>
 					<!-- <div class="form-group">
-						<textarea class="form-control" rows="2" ng-model="blog.head" placeholder="Head code (Optional)"></textarea></div> -->
+						<textarea class="form-control" rows="2" ng-model="blog.headCode" placeholder="Head code (Optional)"></textarea></div> -->
 					<div class="form-group">
 						<textarea class="form-control" rows="2" ng-model="blog.footer" placeholder="Footer code (Optional)"></textarea></div>
 					<div class="form-group">
@@ -374,7 +374,7 @@ object Views {
 				
 				<script src={s"/webjars/angularjs/$ANGULARJS/angular.min.js"}></script>
 				<script src="/coffee/blog.js"></script>
-				{xml.Unparsed(b.head)}
+				{xml.Unparsed( b.headCode.getOrElse("") )}
 			</xml:group>
 		} {
 			<xml:group>
@@ -468,8 +468,9 @@ object Views {
 				</div>
 
 				<footer class="blog-footer">
-					{xml.Unparsed(b.footer)}
+					{xml.Unparsed( b.footer.getOrElse("") )}
 				</footer>
+				{xml.Unparsed( b.bodyCode.getOrElse("") )}
 			</xml:group>
 		}
 	

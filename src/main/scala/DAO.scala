@@ -74,6 +74,8 @@ class RolesTable(tag: Tag) extends Table[Role](tag, "roles") {
 	
 	def * = (blogid, userid, role) <> (Role.apply _ tupled, Role.unapply)
 	def pk = primaryKey("pk_roles", (blogid, userid))
+	def blog_fk = foreignKey("roles_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
+	def user_fk = foreignKey("roles_user_fk", userid, Users)(_.id, onDelete=ForeignKeyAction.Cascade)
 	def idx_roles_blogid = index("idx_roles_blogid", blogid)
 	def idx_roles_userid = index("idx_roles_userid", userid)
 	def idx_roles_role = index("idx_roles_role", role)
@@ -95,30 +97,32 @@ object Roles extends TableQuery(new RolesTable(_)) {
 
 case class Blog(
 	domain: String,
-	head: String,
+	headCode: Option[String],
 	title: String,
 	subtitle: String,
 	description: String,
-	footer: String,
+	footer: Option[String],
+	bodyCode: Option[String],
 	commenting: String = "on",
 	id: Option[Int] = None
 )
 
 object Blog {
-	implicit val blog = jsonFormat8(Blog.apply)
+	implicit val blog = jsonFormat9(Blog.apply)
 }
 
 class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
 	def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 	def domain = column[String]("domain")
-	def head = column[String]("head")
+	def headCode = column[Option[String]]("headCode")
 	def title = column[String]("title")
 	def subtitle = column[String]("subtitle")
 	def description = column[String]("description")
 	def commenting = column[String]("commenting")
-	def footer = column[String]("footer")
+	def footer = column[Option[String]]("footer")
+	def bodyCode = column[Option[String]]("headCode")
 	
-	def * = (domain, head, title, subtitle, description, footer, commenting, id.?) <> (Blog.apply _ tupled, Blog.unapply)
+	def * = (domain, headCode, title, subtitle, description, footer, bodyCode, commenting, id.?) <> (Blog.apply _ tupled, Blog.unapply)
 	def idx_blogs_domain = index("idx_blogs_domain", domain)
 }
 
@@ -129,12 +133,14 @@ object Blogs extends TableQuery(new BlogsTable(_)) {
 
 	def create(
 			domain: String,
-			head: String,
+			headCode: Option[String],
 			title: String,
 			subtitle: String,
 			description: String,
-			footer: String ) = {
-		db.run( this returning map(_.id) += Blog(domain, head, title, subtitle, description, footer) )
+			footer: Option[String],
+			bodyCode: Option[String],
+			commenting: String ) = {
+		db.run( this returning map(_.id) += Blog(domain, headCode, title, subtitle, description, footer, bodyCode, commenting) )
 	}
 
 	def delete(id: Int): Future[Int] = {
@@ -166,6 +172,8 @@ class PostsTable(tag: Tag) extends Table[Post](tag, "posts") {
 	def commenting = column[String]("commenting")
 	
 	def * = (blogid, authorid, title, content, date, status, commenting, id.?) <> (Post.tupled, Post.unapply)
+	def blog_fk = foreignKey("posts_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
+	def user_fk = foreignKey("posts_user_fk", authorid, Users)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Posts extends TableQuery(new PostsTable(_)) {
@@ -209,6 +217,7 @@ class CategoriesTable(tag: Tag) extends Table[Category](tag, "categories") {
 	def description = column[String]("description")
 	
 	def * = (blogid, name, id.?) <> (Category.apply _ tupled, Category.unapply)
+	def blog_fk = foreignKey("categories_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
 	def idx_categories_blogid = index("idx_categories_blogid", blogid)
 	def idx_categories_name = index("idx_categories_name", name)
 	def idx_categories_blogid_name = index("idx_categories_blogid_name", (blogid, name), unique = true)
@@ -242,6 +251,8 @@ class CategorizationsTable(tag: Tag) extends Table[Categorization](tag, "categor
 	
 	def * = (postid, categoryid) <> (Categorization.tupled, Categorization.unapply)
 	def pk = primaryKey("pk_categorizations", (postid, categoryid))
+	def post_fk = foreignKey("categorizations_post_fk", postid, Posts)(_.id, onDelete=ForeignKeyAction.Cascade)
+	def category_fk = foreignKey("categorizations_category_fk", categoryid, Categories)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Categorizations extends TableQuery(new CategorizationsTable(_)) {
@@ -282,6 +293,8 @@ class CommentsTable(tag: Tag) extends Table[Comment](tag, "comments") {
 	def content = column[String]("content")
 	
 	def * = (postid, authorid, name, email, url, date, replyto, content, id.?) <> (Comment.tupled, Comment.unapply)
+	def user_fk = foreignKey("comments_user_fk", authorid, Users)(_.id.?, onDelete=ForeignKeyAction.SetNull)
+	def post_fk = foreignKey("comments_post_fk", postid, Posts)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Comments extends TableQuery(new CommentsTable(_)) {
@@ -324,6 +337,7 @@ class LinksTable(tag: Tag) extends Table[Link](tag, "links") {
 	def text = column[String]("text")
 	
 	def * = (blogid, order, url, text, id.?) <> (Link.tupled, Link.unapply)
+	def blog_fk = foreignKey("links_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Links extends TableQuery(new LinksTable(_)) {
@@ -354,6 +368,7 @@ class SidebarsTable(tag: Tag) extends Table[Sidebar](tag, "sidebars") {
 	def content = column[String]("content")
 	
 	def * = (blogid, title, content, id.?) <> (Sidebar.tupled, Sidebar.unapply)
+	def blog_fk = foreignKey("sidebars_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Sidebars extends TableQuery(new SidebarsTable(_)) {
@@ -384,6 +399,7 @@ class MediasTable(tag: Tag) extends Table[Media](tag, "medias") {
 	def mime = column[String]("mime")
 	
 	def * = (postid, data, mime, id.?) <> (Media.tupled, Media.unapply)
+	def post_fk = foreignKey("medias_post_fk", postid, Posts)(_.id, onDelete=ForeignKeyAction.Cascade)
 }
 
 object Medias extends TableQuery(new MediasTable(_)) {
@@ -428,6 +444,8 @@ class VisitsTable(tag: Tag) extends Table[Visit](tag, "visits") {
 	def userid = column[Option[Int]]("userid")
 	
 	def * = (blogid, ip, host, path, referrer, date, userid, id.?) <> (Visit.apply _ tupled, Visit.unapply)
+	def blog_fk = foreignKey("visits_blog_fk", blogid, Blogs)(_.id, onDelete=ForeignKeyAction.Cascade)
+	def user_fk = foreignKey("visits_user_fk", userid, Users)(_.id.?, onDelete=ForeignKeyAction.SetNull)
 	def idx_visits_blogid = index("idx_visits_blogid", blogid)
 	def idx_visits_ip = index("idx_visits_ip", ip)
 	def idx_visits_referrer = index("idx_visits_referrer", referrer)
