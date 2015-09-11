@@ -120,7 +120,7 @@ class BlogsTable(tag: Tag) extends Table[Blog](tag, "blogs") {
 	def description = column[String]("description")
 	def commenting = column[String]("commenting")
 	def footer = column[Option[String]]("footer")
-	def bodyCode = column[Option[String]]("headCode")
+	def bodyCode = column[Option[String]]("bodyCode")
 	
 	def * = (domain, headCode, title, subtitle, description, footer, bodyCode, commenting, id.?) <> (Blog.apply _ tupled, Blog.unapply)
 	def idx_blogs_domain = index("idx_blogs_domain", domain)
